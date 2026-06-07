@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  DEMO_USER
+  ADMIN
+}
+
+enum AuthProvider {
+  DEMO
+  JWT
+}
+
+enum MonitoredAreaType {
+  RURAL_PROPERTY
+  RURAL_COMMUNITY
+  SCHOOL
+  CONSERVATION_AREA
+  INDIGENOUS_TERRITORY
+}
+
+enum FireEventSource {
+  MOCK
+  NASA_FIRMS
+  INPE_BDQUEIMADAS
+}
+
+enum FireEventRelevance {
+  INSIDE
+  NEARBY
+  OUTSIDE
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+  CRITICAL
+}
+
+enum RiskSeverity {
+  INFO
+  ATTENTION
+  WARNING
+  DANGER
+}
+
+enum RiskFactorCode {
+  NEAR_FIRE_CRITICAL
+  NEAR_FIRE_WARNING
+  FIRE_CLUSTER
+  HIGH_TEMP
+  LOW_HUMIDITY
+  LOW_RAIN
+  STRONG_WIND
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum AlertChannel {
+  IN_APP
+  MOBILE_PREVIEW
+}
+
+enum DataOrigin {
+  MOCK
+  LIVE
+  FALLBACK
+}
+
+model User {
+  id            String          @id @default(uuid()) @db.Uuid
+  name          String          @db.VarChar(80)
+  email         String          @unique @db.VarChar(160)
+  passwordHash  String          @db.VarChar(255)
+  role          UserRole        @default(DEMO_USER)
+  authProvider  AuthProvider    @default(DEMO)
+  isActive      Boolean         @default(true)
+  lastLoginAt   DateTime?
+  accessToken   String?         @db.VarChar(2048)
+  refreshToken  String?         @db.VarChar(2048)
+  tokenExpiresAt DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  monitoredAreas MonitoredArea[]
+
+  @@map("users")
+}
+
+model MonitoredArea {
+  id                  String             @id @default(uuid()) @db.Uuid
+  userId              String             @db.Uuid
+  name                String             @db.VarChar(80)
+  type                MonitoredAreaType
+  latitude            Decimal            @db.Decimal(9, 6)
+  longitude           Decimal            @db.Decimal(9, 6)
+  radiusKm            Decimal            @db.Decimal(5, 2)
+  operationalBufferKm Decimal            @default(5) @db.Decimal(4, 1)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  user                User               @relation(fields: [userId], references: [id])
+  weatherSnapshots    WeatherSnapshot[]
+  riskScores          RiskScore[]
+  alerts              Alert[]
+  areaFireEvents      AreaFireEvent[]
+
+  @@index([userId])
+  @@map("monitored_areas")
+}
+
+model FireEvent {
+  id            String          @id @default(uuid()) @db.Uuid
+  externalId    String?         @unique @db.VarChar(120)
+  source        FireEventSource
+  dataOrigin    DataOrigin      @default(MOCK)
+  latitude      Decimal         @db.Decimal(9, 6)
+  longitude     Decimal         @db.Decimal(9, 6)
+  detectedAt    DateTime
+  recordedAt    DateTime        @default(now())
+  intensity     Decimal?        @db.Decimal(8, 2)
+  confidence    Decimal?        @db.Decimal(5, 2)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  areaLinks     AreaFireEvent[]
+
+  @@index([detectedAt])
+  @@map("fire_events")
+}
+
+model AreaFireEvent {
+  id              String             @id @default(uuid()) @db.Uuid
+  monitoredAreaId String             @db.Uuid
+  fireEventId     String             @db.Uuid
+  distanceKm      Decimal            @db.Decimal(6, 2)
+  relevance       FireEventRelevance
+  consideredAt    DateTime           @default(now())
+  monitoredArea   MonitoredArea      @relation(fields: [monitoredAreaId], references: [id])
+  fireEvent       FireEvent          @relation(fields: [fireEventId], references: [id])
+
+  @@unique([monitoredAreaId, fireEventId])
+  @@index([monitoredAreaId, relevance])
+  @@map("area_fire_events")
+}
+
+model WeatherSnapshot {
+  id               String         @id @default(uuid()) @db.Uuid
+  monitoredAreaId  String         @db.Uuid
+  dataOrigin       DataOrigin     @default(MOCK)
+  observedAt       DateTime
+  temperatureC     Decimal        @db.Decimal(5, 2)
+  precipitationMm  Decimal        @db.Decimal(6, 2)
+  humidityPercent  Decimal        @db.Decimal(5, 2)
+  windSpeedMs      Decimal        @db.Decimal(5, 2)
+  sourceLabel      String         @db.VarChar(80)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  monitoredArea    MonitoredArea  @relation(fields: [monitoredAreaId], references: [id])
+  riskScores       RiskScore[]
+
+  @@index([monitoredAreaId, observedAt])
+  @@map("weather_snapshots")
+}
+
+model RiskScore {
+  id                  String          @id @default(uuid()) @db.Uuid
+  monitoredAreaId     String          @db.Uuid
+  weatherSnapshotId   String?         @db.Uuid
+  dataOrigin          DataOrigin      @default(MOCK)
+  score               Int
+  level               RiskLevel
+  severity            RiskSeverity
+  summary             String          @db.VarChar(255)
+  evaluatedAt         DateTime
+  periodHours         Int             @default(24)
+  fireEventsConsidered Int            @default(0)
+  insideFireEvents    Int             @default(0)
+  nearbyFireEvents    Int             @default(0)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  monitoredArea       MonitoredArea   @relation(fields: [monitoredAreaId], references: [id])
+  weatherSnapshot     WeatherSnapshot? @relation(fields: [weatherSnapshotId], references: [id])
+  factors             RiskFactor[]
+  alerts              Alert[]
+
+  @@index([monitoredAreaId, evaluatedAt])
+  @@map("risk_scores")
+}
+
+model RiskFactor {
+  id          String          @id @default(uuid()) @db.Uuid
+  riskScoreId String          @db.Uuid
+  code        RiskFactorCode
+  label       String          @db.VarChar(80)
+  points      Int
+  reason      String          @db.VarChar(255)
+  sortOrder   Int
+  createdAt   DateTime        @default(now())
+  riskScore   RiskScore       @relation(fields: [riskScoreId], references: [id])
+
+  @@index([riskScoreId, sortOrder])
+  @@map("risk_factors")
+}
+
+model Alert {
+  id                 String         @id @default(uuid()) @db.Uuid
+  monitoredAreaId    String         @db.Uuid
+  riskScoreId        String         @db.Uuid
+  status             AlertStatus    @default(ACTIVE)
+  channel            AlertChannel   @default(IN_APP)
+  level              RiskLevel
+  severity           RiskSeverity
+  title              String         @db.VarChar(120)
+  message            String         @db.VarChar(255)
+  summary            String         @db.VarChar(160)
+  recommendedActions Json
+  triggeredAt        DateTime
+  acknowledgedAt     DateTime?
+  resolvedAt         DateTime?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  monitoredArea      MonitoredArea  @relation(fields: [monitoredAreaId], references: [id])
+  riskScore          RiskScore      @relation(fields: [riskScoreId], references: [id])
+
+  @@index([monitoredAreaId, status])
+  @@index([riskScoreId])
+  @@map("alerts")
+}

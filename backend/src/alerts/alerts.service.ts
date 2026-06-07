@@ -1,7 +1,6 @@
 import {
   AlertChannel,
   AlertStatus,
-  DataOrigin,
   RiskLevel,
   RiskSeverity,
 } from '../common/domain/enums';
@@ -11,6 +10,7 @@ import { RiskCalculationResponseDto } from '../risk-engine/contracts/risk.contra
 import { MonitoredAreasService } from '../monitored-areas/monitored-areas.service';
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
 import { AlertEntity } from './entities/alert.entity';
+import { buildAlertContent } from './alert-message';
 
 export class AlertsService {
   constructor(
@@ -25,14 +25,7 @@ export class AlertsService {
     }
 
     const area = this.monitoredAreasService.getEntityById(risk.monitoredAreaId, userId);
-    const title =
-      risk.level === RiskLevel.CRITICAL ? 'Risco critico de queimada' : 'Risco alto de queimada';
-    const summary = risk.summary;
-    const recommendedActions = [
-      'Reforce a vigilancia local agora.',
-      'Verifique aceiros, acessos e pontos de apoio.',
-      'Mantenha equipes de resposta em prontidao.',
-    ];
+    const content = buildAlertContent(area.name, risk.level, risk.summary, risk.factors);
 
     const existing = this.store.resolveExistingActiveAlert(area.id);
     if (existing) {
@@ -40,10 +33,11 @@ export class AlertsService {
       existing.channel = AlertChannel.IN_APP;
       existing.level = risk.level;
       existing.severity = risk.severity;
-      existing.title = title;
-      existing.message = summary;
-      existing.summary = summary;
-      existing.recommendedActions = recommendedActions;
+      existing.riskScoreId = risk.id;
+      existing.title = content.title;
+      existing.message = content.message;
+      existing.summary = content.summary;
+      existing.recommendedActions = content.recommendedActions;
       existing.triggeredAt = new Date(risk.evaluatedAt);
       existing.updatedAt = new Date();
       this.store.upsertAlert(existing);
@@ -58,10 +52,10 @@ export class AlertsService {
       channel: AlertChannel.IN_APP,
       level: risk.level,
       severity: risk.severity,
-      title,
-      message: summary,
-      summary,
-      recommendedActions,
+      title: content.title,
+      message: content.message,
+      summary: content.summary,
+      recommendedActions: content.recommendedActions,
       triggeredAt: new Date(risk.evaluatedAt),
       createdAt: new Date(),
       updatedAt: new Date(),

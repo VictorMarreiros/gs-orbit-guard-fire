@@ -1,5 +1,4 @@
-import { MonitoredAreaType } from '../common/domain/enums';
-import { AuthorizationApplicationError, NotFoundApplicationError, ValidationApplicationError } from '../common/errors';
+import { AuthorizationApplicationError, NotFoundApplicationError } from '../common/errors';
 import { roundTo } from '../common/domain/math';
 import {
   CreateMonitoredAreaRequestDto,
@@ -8,19 +7,20 @@ import {
 } from './contracts/monitored-areas.contracts';
 import { MonitoredAreaEntity } from './entities/monitored-area.entity';
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
+import { validateCreateMonitoredAreaInput } from './monitored-area-validation';
 
 export class MonitoredAreasService {
   constructor(private readonly store: OrbitGuardStore) {}
 
-  create(input: CreateMonitoredAreaRequestDto, userId: string): MonitoredAreaResponseDto {
-    this.validate(input);
+  create(input: Partial<CreateMonitoredAreaRequestDto>, userId: string): MonitoredAreaResponseDto {
+    const validatedInput = validateCreateMonitoredAreaInput(input);
     const area = this.store.seedArea({
       userId,
-      name: input.name.trim(),
-      type: input.type,
-      latitude: roundTo(input.latitude, 6),
-      longitude: roundTo(input.longitude, 6),
-      radiusKm: roundTo(input.radiusKm, 2),
+      name: validatedInput.name,
+      type: validatedInput.type,
+      latitude: roundTo(validatedInput.latitude, 6),
+      longitude: roundTo(validatedInput.longitude, 6),
+      radiusKm: roundTo(validatedInput.radiusKm, 2),
       operationalBufferKm: 5,
     });
 
@@ -68,52 +68,6 @@ export class MonitoredAreasService {
     }
 
     return area;
-  }
-
-  private validate(input: CreateMonitoredAreaRequestDto): void {
-    const details = [];
-    const name = input.name?.trim() ?? '';
-
-    if (name.length < 3 || name.length > 80) {
-      details.push({ field: 'name', message: 'Informe um nome entre 3 e 80 caracteres.', code: 'INVALID_NAME' });
-    }
-
-    const allowedTypes = Object.values(MonitoredAreaType) as string[];
-    if (!allowedTypes.includes(input.type)) {
-      details.push({
-        field: 'type',
-        message: 'Selecione um tipo de area valido.',
-        code: 'INVALID_TYPE',
-      });
-    }
-
-    if (!Number.isFinite(input.latitude) || input.latitude < -90 || input.latitude > 90) {
-      details.push({
-        field: 'latitude',
-        message: 'Informe uma latitude valida entre -90 e 90.',
-        code: 'INVALID_LATITUDE',
-      });
-    }
-
-    if (!Number.isFinite(input.longitude) || input.longitude < -180 || input.longitude > 180) {
-      details.push({
-        field: 'longitude',
-        message: 'Informe uma longitude valida entre -180 e 180.',
-        code: 'INVALID_LONGITUDE',
-      });
-    }
-
-    if (!Number.isFinite(input.radiusKm) || input.radiusKm < 0.1 || input.radiusKm > 50) {
-      details.push({
-        field: 'radiusKm',
-        message: 'Informe um raio de monitoramento entre 0.1 km e 50 km.',
-        code: 'INVALID_RADIUS',
-      });
-    }
-
-    if (details.length > 0) {
-      throw new ValidationApplicationError('Payload de area monitorada invalido.', 'MONITORED_AREA_VALIDATION_FAILED', details);
-    }
   }
 
   private toResponse(area: MonitoredAreaEntity): MonitoredAreaResponseDto {

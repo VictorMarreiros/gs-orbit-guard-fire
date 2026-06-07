@@ -66,6 +66,20 @@ Prefer semantic commits with one concern per commit:
 
 Avoid mixing documentation, domain modeling, and API contract work in a single commit when they can be separated cleanly.
 
+## Git Conventions
+
+- Branches must use a clear type prefix, with `feat/` as the default for feature work.
+- Other accepted prefixes are `fix/`, `docs/`, `test/`, and `chore/` when they better describe the scope of the branch.
+- Branch names should be short, lowercase, kebab-case after the prefix, for example `feat/git-conventions`.
+- Commit messages must be single-line subjects only.
+- Do not add commit body paragraphs, bullet lists, or multi-line explanations.
+- Prefer Conventional Commits style subjects, for example `feat(git): add branch naming rule` or `docs(git): define commit format`.
+- Do not use empty scope parentheses like `feat()`: use `feat(scope): ...` when a scope exists, or `feat: ...` when it does not.
+- Keep the subject imperative, concise, and limited to the change itself.
+- When a change is small and does not need a scope, use the shortest valid subject that still communicates intent.
+
+Reference: `docs/git-conventions.md`.
+
 ## Minimum Done Criteria
 
 Before considering work complete:

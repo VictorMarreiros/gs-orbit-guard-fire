@@ -5,6 +5,7 @@ import { WeatherSnapshotResponseDto } from './contracts/weather.contracts';
 import { MonitoredAreasService } from '../monitored-areas/monitored-areas.service';
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
 import { buildMockScenario, fallbackOrigin } from '../integrations/mocks/mock-data';
+import { interpretWeatherForRisk } from '../common/domain/weather-rules';
 
 export class WeatherService {
   constructor(
@@ -15,8 +16,9 @@ export class WeatherService {
   getLatestByAreaId(areaId: string, userId: string): WeatherSnapshotResponseDto {
     const area = this.monitoredAreasService.getEntityById(areaId, userId);
     const scenario = buildMockScenario(area);
+    const existingSnapshot = this.store.getLatestWeatherSnapshot(areaId);
 
-    if (!this.store.getLatestWeatherSnapshot(areaId)) {
+    if (!existingSnapshot) {
       const now = new Date();
       this.store.upsertWeatherSnapshot({
         id: randomUUID(),
@@ -38,16 +40,35 @@ export class WeatherService {
       throw new NotFoundApplicationError('Snapshot climatico nao encontrado.', 'WEATHER_SNAPSHOT_NOT_FOUND');
     }
 
+    const interpretation = interpretWeatherForRisk(snapshot, scenario.weather);
+    if (interpretation.usedFallback && existingSnapshot) {
+      const now = new Date();
+      this.store.upsertWeatherSnapshot({
+        ...snapshot,
+        dataOrigin: DataOrigin.FALLBACK,
+        observedAt: scenario.weather.observedAt,
+        temperatureC: interpretation.temperatureC,
+        precipitationMm: interpretation.precipitationMm,
+        humidityPercent: interpretation.humidityPercent,
+        windSpeedMs: interpretation.windSpeedMs,
+        sourceLabel: scenario.weather.sourceLabel,
+        updatedAt: now,
+      });
+    }
+
+    const responseObservedAt = interpretation.usedFallback ? scenario.weather.observedAt : snapshot.observedAt;
+    const responseSourceLabel = interpretation.usedFallback ? scenario.weather.sourceLabel : snapshot.sourceLabel;
+
     return {
       id: snapshot.id,
       monitoredAreaId: snapshot.monitoredAreaId,
       dataOrigin: fallbackOrigin(),
-      sourceLabel: snapshot.sourceLabel,
-      observedAt: snapshot.observedAt.toISOString(),
-      temperatureC: Number(snapshot.temperatureC),
-      precipitationMm: Number(snapshot.precipitationMm),
-      humidityPercent: Number(snapshot.humidityPercent),
-      windSpeedMs: Number(snapshot.windSpeedMs),
+      sourceLabel: responseSourceLabel,
+      observedAt: responseObservedAt.toISOString(),
+      temperatureC: interpretation.temperatureC,
+      precipitationMm: interpretation.precipitationMm,
+      humidityPercent: interpretation.humidityPercent,
+      windSpeedMs: interpretation.windSpeedMs,
       usedFallback: true,
     };
   }

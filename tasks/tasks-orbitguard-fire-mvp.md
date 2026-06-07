@@ -229,125 +229,146 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
 
 ### 4. Implementacao backend
 
-- [ ] 4.1 Implementar modulo de autenticacao e protecao basica de credenciais.
+- [x] 4.1 Implementar modulo de autenticacao e protecao basica de credenciais.
   - **Referencias PRD:** RNF004, DEP006.
   - **Criterio de pronto:** fluxo de autenticacao ou contexto demonstrativo funciona sem expor dados sensiveis.
 
-- [ ] 4.2 Implementar servico de cadastro e validacao de area monitorada.
+- [x] 4.2 Implementar servico de cadastro e validacao de area monitorada.
   - **Referencias PRD:** RF001, RN001, CA001, CA002.
   - **Criterio de pronto:** criacao de area valida persiste ou simula persistencia e rejeita entradas invalidas.
 
-- [ ] 4.3 Implementar servico de consulta espacial da area monitorada.
+- [x] 4.3 Implementar servico de consulta espacial da area monitorada.
   - **Referencias PRD:** RF002, RN002, CA003.
   - **Criterio de pronto:** backend fornece dados espaciais para renderizacao da area e raio no mapa.
 
-- [ ] 4.4 Implementar servico de focos de calor com suporte a fonte simulada e fallback.
+- [x] 4.4 Implementar servico de focos de calor com suporte a fonte simulada e fallback.
   - **Referencias PRD:** RF003, RN002, RN003, RN004, RNF002, CA004, CA005.
   - **Criterio de pronto:** backend retorna focos coerentes com a area e mantem fluxo quando integracao externa falha.
 
-- [ ] 4.5 Implementar servico de dados climaticos com suporte a fonte simulada e fallback.
+- [x] 4.5 Implementar servico de dados climaticos com suporte a fonte simulada e fallback.
   - **Referencias PRD:** RF004, RN005, RNF002, CA004, CA005.
   - **Criterio de pronto:** backend retorna snapshot climatico valido e continua funcional sem dependencia externa obrigatoria.
 
-- [ ] 4.6 Implementar motor de risco e classificacao.
+- [x] 4.6 Implementar motor de risco e classificacao.
   - **Referencias PRD:** RF005, RN003, RN004, RN005, RN006, CA004, CA006.
   - **Criterio de pronto:** score e classificacao sao calculados com base nas regras definidas e retornados com fatores explicitos.
 
-- [ ] 4.7 Implementar geracao de alerta preventivo.
+- [x] 4.7 Implementar geracao de alerta preventivo.
   - **Referencias PRD:** RF006, RN007, CA007, CA008.
   - **Criterio de pronto:** alerta ativo e coerente e produzido a partir do resultado do risco com recomendacoes praticas.
 
-- [ ] 4.8 Implementar agregacoes e servico do dashboard.
+- [x] 4.8 Implementar agregacoes e servico do dashboard.
   - **Referencias PRD:** RF007, CA009.
   - **Criterio de pronto:** backend consolida indicadores minimos necessarios para leitura gerencial.
+  - **Evidencia de validacao:** revisao estatica do scaffold backend em `backend/src/*`, alinhamento com os contratos de API e bootstrap demonstrativo em memoria. Validacao automatizada nao foi executada porque `tsc` nao esta disponivel neste ambiente.
 
 ### 5. Implementacao frontend/mobile
 
-- [ ] 5.1 Implementar fluxo de entrada/login demonstrativo.
+- [x] 5.1 Implementar fluxo de entrada/login demonstrativo.
   - **Referencias PRD:** escopo funcional, UX/UI, RNF004.
   - **Criterio de pronto:** usuario acessa o fluxo principal com contexto de sessao coerente.
+  - **Evidencia de validacao:** prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` com login demonstrativo, persistencia de sessao em `sessionStorage`, mensagem de erro para credenciais invalidas e tela autenticada exibindo usuario, permissao, token e expiracao.
 
-- [ ] 5.2 Implementar formulario de cadastro de area monitorada.
+- [x] 5.2 Implementar formulario de cadastro de area monitorada.
   - **Referencias PRD:** RF001, RN001, CA001, CA002.
   - **Criterio de pronto:** formulario coleta dados minimos, valida entrada e avanca ao sucesso.
+  - **Evidencia de validacao:** prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` com formulario de area, validacao inline de nome, tipo, latitude, longitude e raio, estado de sucesso com resumo da area e persistencia local em `sessionStorage`.
 
-- [ ] 5.3 Implementar tela de mapa de risco com area, raio e focos.
+- [x] 5.3 Implementar tela de mapa de risco com area, raio e focos.
   - **Referencias PRD:** RF002, CA003, DEP002.
   - **Criterio de pronto:** mapa exibe area monitorada, contexto espacial e legenda compreensivel.
+  - **Evidencia de validacao:** tela de mapa adicionada ao prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html`, com estado vazio, anel monitorado, vizinhanca operacional, marcadores de focos e legenda; checagem sintatica do bloco `script` executada com `node -e` e resultado `script-ok`.
 
-- [ ] 5.4 Integrar exibição de focos e dados climaticos na experiencia de calculo.
+- [x] 5.4 Integrar exibição de focos e dados climaticos na experiencia de calculo.
   - **Referencias PRD:** RF003, RF004, CA004, CA005.
   - **Criterio de pronto:** usuario consegue visualizar os insumos usados no calculo de risco.
+  - **Evidencia de validacao:** o prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` agora exibe a seção `Experiencia de calculo` com focos, snapshot climatico, sinais que entram no score e contexto de fonte `MOCK/FALLBACK`; validacao sintatica do bloco `script` executada com `node -e` e resultado `script-ok`.
 
-- [ ] 5.5 Implementar tela ou componente de resultado do score de risco.
+- [x] 5.5 Implementar tela ou componente de resultado do score de risco.
   - **Referencias PRD:** RF005, RNF001, CA004, CA006.
   - **Criterio de pronto:** score, nivel e fatores ficam visiveis em linguagem clara e com destaque visual adequado.
+  - **Evidencia de validacao:** bloco visual `Resultado do score` adicionado ao prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html`, com score, nivel, severidade, resumo e fatores explicaveis; validacao sintatica do bloco `script` executada com `node -e` e resultado `script-ok`.
 
-- [ ] 5.6 Implementar detalhe do alerta preventivo.
+- [x] 5.6 Implementar detalhe do alerta preventivo.
   - **Referencias PRD:** RF006, RN007, RNF001, CA007.
   - **Criterio de pronto:** alerta exibe resumo da situacao, causas principais e recomendacoes acionaveis.
+  - **Evidencia de validacao:** secao `Detalhe do alerta preventivo` adicionada ao prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html`, com estado vazio, alerta ativo, resumo, causas e recomendacoes; validacao sintatica do bloco `script` executada com `node -e` e resultado `script-ok`.
 
-- [ ] 5.7 Implementar dashboard gerencial.
+- [x] 5.7 Implementar dashboard gerencial.
   - **Referencias PRD:** RF007, CA008, CA009.
   - **Criterio de pronto:** dashboard exibe agregacoes principais, incluindo estado vazio quando aplicavel.
+  - **Evidencia de validacao:** secao `Dashboard gerencial` adicionada ao prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html`, com metricas, distribuicao por nivel, areas prioritarias e estado vazio quando nao ha alerta ativo; validacao sintatica do bloco `script` executada com `node -e` e resultado `script-ok`.
 
-- [ ] 5.8 Implementar demonstracao visual de notificacao mobile ou in-app.
+- [x] 5.8 Implementar demonstracao visual de notificacao mobile ou in-app.
   - **Referencias PRD:** RF008, RN007, CA010.
   - **Criterio de pronto:** notificacao reflete o contexto do alerta gerado e permanece no escopo demonstrativo.
+  - **Evidencia de validacao:** secao `Demonstracao de notificacao in-app` adicionada ao prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html`, com preview mobile, mensagem acionavel e estado vazio quando nao ha alerta ativo; validacao sintatica do bloco `script` executada com `node -e` e resultado `script-ok`.
 
 ### 6. Estados de UI e experiencia do usuario
 
-- [ ] 6.1 Implementar estado de loading nas operacoes de consulta e calculo.
+- [x] 6.1 Implementar estado de loading nas operacoes de consulta e calculo.
   - **Referencias PRD:** estados de interface, RF002, RF005.
   - **Criterio de pronto:** usuario recebe feedback visual claro enquanto o sistema carrega ou calcula.
+  - **Evidencia de validacao:** prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` com estados de loading dedicados para consulta do mapa e calculo de risco; validacao sintatica do bloco `script` executada com `node --check` em arquivo temporario extraido do HTML, sem erros.
 
-- [ ] 6.2 Implementar estados de sucesso e vazio para alertas e dashboard.
+- [x] 6.2 Implementar estados de sucesso e vazio para alertas e dashboard.
   - **Referencias PRD:** RF006, RF007, CA008, CA009, RNF001.
   - **Criterio de pronto:** telas diferenciam claramente presenca e ausencia de dados relevantes.
+  - **Evidencia de validacao:** o prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` agora diferencia explicitamente o estado vazio inicial, o vazio com area cadastrada e o estado de sucesso com alerta ativo para as secoes `Detalhe do alerta preventivo` e `Dashboard gerencial`; validacao sintatica do bloco `script` executada com `node --check` em arquivo temporario extraido do HTML, sem erros.
 
-- [ ] 6.3 Implementar estado de erro com fallback para dados simulados.
+- [x] 6.3 Implementar estado de erro com fallback para dados simulados.
   - **Referencias PRD:** RF003, RF004, RNF002, CA005.
   - **Criterio de pronto:** falhas externas nao quebram o fluxo e sao comunicadas sem ambiguidade.
+  - **Evidencia de validacao:** o prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` agora oferece o toggle `Simular falha externa`, exibe banners de fallback no mapa e na experiencia de calculo e mantém o fluxo operacional com dados mockados; validacao sintatica do bloco `script` executada com `node --check` em arquivo temporario extraido do HTML, sem erros.
 
-- [ ] 6.4 Implementar estado de dados invalidos no cadastro de area.
+- [x] 6.4 Implementar estado de dados invalidos no cadastro de area.
   - **Referencias PRD:** RF001, RN001, CA002.
   - **Criterio de pronto:** campos invalidos sao destacados com mensagens coerentes.
+  - **Evidencia de validacao:** o prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` agora exibe resumo de dados invalidos, destaca campos com `.is-invalid`, aplica `aria-invalid`, foca o primeiro campo com erro e bloqueia coordenadas/raio ausentes antes da conversao numerica; validacao sintatica do bloco `script` executada com `node --check` em arquivo temporario extraido do HTML, sem erros.
 
-- [ ] 6.5 Implementar tratamento visual para permissao negada e notificacao demonstrativa.
+- [x] 6.5 Implementar tratamento visual para permissao negada e notificacao demonstrativa.
   - **Referencias PRD:** estados de permissao negada, RF008, CA010.
   - **Criterio de pronto:** usuario entende quando nao tem acesso e a notificacao e apresentada de forma consistente.
+  - **Evidencia de validacao:** prototipo navegavel em `prototypes/orbitguard-fire-prototipo-v2.html` com controle `Simular area privada`, painel visual de acesso restrito baseado em `canViewPrivateAreas: false`, bloqueio demonstrativo de mapa/risco/alerta/dashboard e preview de notificacao `IN_APP | ACESSO_RESTRITO` sem revelar detalhes sensiveis; validacao sintatica do bloco `script` executada com `node --check` em arquivo temporario extraido do HTML, sem erros.
 
 ### 7. Regras de negocio e validacoes
 
-- [ ] 7.1 Implementar regras do motor de risco e classificacao por faixa.
+- [x] 7.1 Implementar regras do motor de risco e classificacao por faixa.
   - **Referencias PRD:** RN003, RN004, RN005, RN006, RF005, CA006.
   - **Criterio de pronto:** cada regra impacta o score corretamente e a classificacao final respeita as faixas definidas.
+  - **Evidencia de validacao:** regras consolidadas em `backend/src/common/domain/risk-rules.ts` e `backend/src/risk-engine/risk-engine.service.ts`, com validacao executada por `npm run check` em `backend/` e verificacao manual do backend em memoria mostrando os tres cenarios bootstrapados nas faixas `CRITICAL` (`95`), `MODERATE` (`45`) e `LOW` (`0`).
 
-- [ ] 7.2 Implementar regra de leitura de focos recentes e concentracao por janela temporal.
+- [x] 7.2 Implementar regra de leitura de focos recentes e concentracao por janela temporal.
   - **Referencias PRD:** RF003, RN004.
   - **Criterio de pronto:** backend distingue evento isolado de concentracao relevante para o risco.
+  - **Evidencia de validacao:** `backend/src/fire-events/fire-events.service.ts` filtra focos por `periodHours` e `backend/src/risk-engine/risk-engine.service.ts` reutiliza a mesma janela para o calculo; validacao manual no backend mostrou diferenca entre janela de `5h` e `24h` no mesmo area bootstrapada, com `2` focos e score `75/HIGH` na janela curta e `4` focos com fator `FIRE_CLUSTER` e score `95/CRITICAL` na janela longa. Validacao automatizada executada com `npm run check` em `backend/`.
 
-- [ ] 7.3 Implementar validacao e interpretacao das variaveis climaticas usadas no risco.
+- [x] 7.3 Implementar validacao e interpretacao das variaveis climaticas usadas no risco.
   - **Referencias PRD:** RF004, RN005.
   - **Criterio de pronto:** clima invalido, ausente ou extremo e tratado de forma deterministica.
+  - **Evidencia de validacao:** `backend/src/common/domain/weather-rules.ts` centraliza a validacao e interpretacao das variaveis climaticas com fallback deterministico, `backend/src/weather/weather.service.ts` normaliza snapshots invalidos antes de expor o clima e `backend/src/risk-engine/risk-engine.service.ts` consome os sinais interpretados para o calculo; validacao automatizada com `npm run check` em `backend/` e smoke test manual via `node -r ts-node/register -e` confirmando que um snapshot corrompido em memoria volta a resposta `FALLBACK` com `temperatureC: 33.2`, `humidityPercent: 28`, `precipitationMm: 0`, `windSpeedMs: 4.1` e que o resumo de risco permanece coerente.
 
-- [ ] 7.4 Implementar validacao de campos obrigatorios e formato da area monitorada.
+- [x] 7.4 Implementar validacao de campos obrigatorios e formato da area monitorada.
   - **Referencias PRD:** RN001, CA001, CA002.
   - **Criterio de pronto:** area invalida nao pode ser salva nem usada em calculo.
+  - **Evidencia de validacao:** validacao extraida para `backend/src/monitored-areas/monitored-area-validation.ts`, aplicada em `backend/src/monitored-areas/monitored-areas.service.ts` e coberta por script de assercoes em `backend/test/monitored-areas.service.test.ts`; validacao automatizada executada com `npm run check` em `backend/` e `node -r ts-node/register test\\monitored-areas.service.test.ts`, com saida `monitored-areas validation checks passed`.
 
-- [ ] 7.5 Implementar regra de proximidade espacial e relevancia do foco no mapa e no calculo.
+- [x] 7.5 Implementar regra de proximidade espacial e relevancia do foco no mapa e no calculo.
   - **Referencias PRD:** RN002, RN003, CA003.
   - **Criterio de pronto:** somente focos relevantes impactam exibicao e pontuacao.
+  - **Evidencia de validacao:** regra formalizada em `backend/src/common/domain/fire-event-proximity.ts` e aplicada em `backend/src/integrations/mocks/mock-data.ts`, `backend/src/fire-events/fire-events.service.ts` e `backend/src/risk-engine/risk-engine.service.ts`; validacao automatizada executada com `npm run check` em `backend/`, `node -r ts-node/register test\\fire-events-proximity.test.ts` e `node -r ts-node/register test\\monitored-areas.service.test.ts`, com saidas `fire-events proximity checks passed` e `monitored-areas validation checks passed`.
 
-- [ ] 7.6 Implementar construcao de mensagem explicavel do alerta.
+- [x] 7.6 Implementar construcao de mensagem explicavel do alerta.
   - **Referencias PRD:** RN007, CA007, CA010.
   - **Criterio de pronto:** mensagem final explicita fatores e recomendacoes sem linguagem tecnica excessiva.
+  - **Evidencia de validacao:** construcao centralizada em `backend/src/alerts/alert-message.ts` e consumida por `backend/src/alerts/alerts.service.ts`, com mensagem, resumo e recomendacoes derivadas dos fatores do risco; validacao automatizada executada com `npm run check` em `backend/`, `node -r ts-node/register test\\alert-message.test.ts` e `node -r ts-node/register test\\fire-events-proximity.test.ts`, com saidas `alert message checks passed` e `fire-events proximity checks passed`.
 
 ### 8. Testes unitarios
 
-- [ ] 8.1 Criar testes unitarios para validacao do cadastro de area.
+- [x] 8.1 Criar testes unitarios para validacao do cadastro de area.
   - **Referencias PRD:** RF001, RN001, CA001, CA002.
   - **Criterio de pronto:** testes cobrem sucesso, campos invalidos e bloqueios principais.
+  - **Evidencia de validacao:** cobertura ampliada em `backend/test/monitored-areas.service.test.ts` com caminho feliz adicional para `name` com `trim`, preservando a normalizacao observavel do cadastro; validacao executada com `cd backend && npm run check` e `cd backend && node -r ts-node/register test\\monitored-areas.service.test.ts`, com saidas `check` sem erros e `monitored-areas validation checks passed`.
 
 - [ ] 8.2 Criar testes unitarios para transformacao e exibicao do contexto espacial.
   - **Referencias PRD:** RF002, RN002, CA003.

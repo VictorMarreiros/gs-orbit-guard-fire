@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { DataOrigin, FireEventRelevance, FireEventSource } from '../common/domain/enums';
+import { isRelevantFireEvent } from '../common/domain/fire-event-proximity';
 import { roundTo } from '../common/domain/math';
 import {
   FireEventItemDto,
@@ -30,19 +31,21 @@ export class FireEventsService {
       return ageHours <= periodHours;
     });
 
-    const items: FireEventItemDto[] = links.map(({ fireEvent, link }) => ({
-      id: fireEvent.id,
-      externalId: fireEvent.externalId ?? undefined,
-      source: fireEvent.source,
-      dataOrigin: fireEvent.dataOrigin,
-      latitude: Number(fireEvent.latitude),
-      longitude: Number(fireEvent.longitude),
-      detectedAt: fireEvent.detectedAt.toISOString(),
-      distanceKm: Number(link.distanceKm),
-      relevance: link.relevance,
-      intensity: fireEvent.intensity ? Number(fireEvent.intensity) : undefined,
-      confidence: fireEvent.confidence ? Number(fireEvent.confidence) : undefined,
-    }));
+    const items: FireEventItemDto[] = links
+      .filter(({ link }) => isRelevantFireEvent(link.distanceKm, area.radiusKm, area.operationalBufferKm))
+      .map(({ fireEvent, link }) => ({
+        id: fireEvent.id,
+        externalId: fireEvent.externalId ?? undefined,
+        source: fireEvent.source,
+        dataOrigin: fireEvent.dataOrigin,
+        latitude: Number(fireEvent.latitude),
+        longitude: Number(fireEvent.longitude),
+        detectedAt: fireEvent.detectedAt.toISOString(),
+        distanceKm: Number(link.distanceKm),
+        relevance: link.relevance,
+        intensity: fireEvent.intensity ? Number(fireEvent.intensity) : undefined,
+        confidence: fireEvent.confidence ? Number(fireEvent.confidence) : undefined,
+      }));
 
     return {
       areaId,

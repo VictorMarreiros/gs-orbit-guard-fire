@@ -1,16 +1,17 @@
 import {
   DataOrigin,
-  FireEventRelevance,
   RiskFactorCode,
   RiskLevel,
 } from '../common/domain/enums';
 import { randomUUID } from 'crypto';
+import { isRelevantFireEvent } from '../common/domain/fire-event-proximity';
 import { classifyRisk, RISK_RULES, RISK_SCORE_MAX } from '../common/domain/risk-rules';
 import { RiskCalculationResponseDto, RiskFactorResponseDto } from './contracts/risk.contracts';
 import { MonitoredAreasService } from '../monitored-areas/monitored-areas.service';
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
 import { FireEventsService } from '../fire-events/fire-events.service';
 import { WeatherService } from '../weather/weather.service';
+import { interpretWeatherForRisk } from '../common/domain/weather-rules';
 
 export class RiskEngineService {
   constructor(
@@ -24,14 +25,14 @@ export class RiskEngineService {
     const area = this.monitoredAreasService.getEntityById(areaId, userId);
     const fireEvents = this.fireEventsService.getByAreaId(areaId, { periodHours }, userId);
     const weather = this.weatherService.getLatestByAreaId(areaId, userId);
+    const weatherAssessment = interpretWeatherForRisk(weather, weather);
     const evaluatedAt = new Date();
 
     const factors: RiskFactorResponseDto[] = [];
     let score = 0;
 
-    const relevantItems = fireEvents.items.filter(
-      (item) =>
-        item.relevance === FireEventRelevance.INSIDE || item.relevance === FireEventRelevance.NEARBY,
+    const relevantItems = fireEvents.items.filter((item) =>
+      isRelevantFireEvent(item.distanceKm, area.radiusKm, area.operationalBufferKm),
     );
     const nearestDistance = relevantItems.length
       ? Math.min(...relevantItems.map((item) => item.distanceKm))
@@ -65,49 +66,55 @@ export class RiskEngineService {
       });
     }
 
-    if (weather.temperatureC > 32) {
+    if (weatherAssessment.isHot) {
       score += RISK_RULES.highTemp;
       factors.push({
         code: RiskFactorCode.HIGH_TEMP,
         label: 'Temperatura elevada',
         points: RISK_RULES.highTemp,
-        reason: 'A temperatura observada ultrapassou 32 C.',
+        reason: `A temperatura observada ultrapassou 32 C (${weatherAssessment.temperatureC.toFixed(1)} C).`,
       });
     }
 
-    if (weather.humidityPercent < 30) {
+    if (weatherAssessment.isDryAir) {
       score += RISK_RULES.lowHumidity;
       factors.push({
         code: RiskFactorCode.LOW_HUMIDITY,
         label: 'Baixa umidade',
         points: RISK_RULES.lowHumidity,
-        reason: 'A umidade relativa ficou abaixo de 30%.',
+        reason: `A umidade relativa ficou abaixo de 30% (${weatherAssessment.humidityPercent.toFixed(0)}%).`,
       });
     }
 
-    if (weather.precipitationMm < 1) {
+    if (weatherAssessment.isDryWeather) {
       score += RISK_RULES.lowRain;
       factors.push({
         code: RiskFactorCode.LOW_RAIN,
         label: 'Ausencia de chuva relevante',
         points: RISK_RULES.lowRain,
-        reason: 'A precipitacao observada foi menor que 1 mm.',
+        reason: `A precipitacao observada foi menor que 1 mm (${weatherAssessment.precipitationMm.toFixed(1)} mm).`,
       });
     }
 
-    if (weather.windSpeedMs > 8) {
+    if (weatherAssessment.isWindy) {
       score += RISK_RULES.strongWind;
       factors.push({
         code: RiskFactorCode.STRONG_WIND,
         label: 'Vento forte',
         points: RISK_RULES.strongWind,
-        reason: 'A velocidade do vento ficou acima de 8 m/s.',
+        reason: `A velocidade do vento ficou acima de 8 m/s (${weatherAssessment.windSpeedMs.toFixed(1)} m/s).`,
       });
     }
 
     score = Math.min(score, RISK_SCORE_MAX);
     const { level, severity } = classifyRisk(score);
-    const summary = this.buildSummary(area.name, factors, level);
+    const summary = this.buildSummary(
+      area.name,
+      factors,
+      level,
+      weatherAssessment.climateSummary,
+      periodHours,
+    );
     const riskScoreId = randomUUID();
     const weatherSnapshot = this.store.getLatestWeatherSnapshot(areaId);
 
@@ -167,9 +174,16 @@ export class RiskEngineService {
     };
   }
 
-  private buildSummary(areaName: string, factors: RiskFactorResponseDto[], level: RiskLevel): string {
+  private buildSummary(
+    areaName: string,
+    factors: RiskFactorResponseDto[],
+    level: RiskLevel,
+    climateSummary: string,
+    periodHours: number,
+  ): string {
     const factorLabels = factors.slice(0, 2).map((factor) => factor.label.toLowerCase());
     const detail = factorLabels.length > 0 ? ` (${factorLabels.join(', ')})` : '';
-    return `${areaName} apresenta risco ${level.toLowerCase()} nas ultimas 24 horas${detail}.`;
+    const climateDetail = climateSummary ? ` ${climateSummary}` : '';
+    return `${areaName} apresenta risco ${level.toLowerCase()} nas ultimas ${periodHours} horas${detail}.${climateDetail}`;
   }
 }

@@ -3,6 +3,7 @@ import {
   FireEventRelevance,
   FireEventSource,
 } from '../../common/domain/enums';
+import { classifyFireEventRelevance } from '../../common/domain/fire-event-proximity';
 import { destinationPoint, GeoPoint, roundTo } from '../../common/domain/math';
 import { MonitoredAreaEntity } from '../../monitored-areas/entities/monitored-area.entity';
 
@@ -58,10 +59,10 @@ export function buildMockScenario(area: MonitoredAreaEntity): GeneratedMockScena
     return {
       key,
       fireEvents: [
-        buildFireEvent(center, area.radiusKm, 2.1, 35, now, 1, 92.4, 88.1),
-        buildFireEvent(center, area.radiusKm, 4.2, 110, now, 2, 95.2, 91.6),
-        buildFireEvent(center, area.radiusKm, 11.3, 205, now, 6, 84.7, 79.4),
-        buildFireEvent(center, area.radiusKm, 13.7, 280, now, 15, 76.2, 73.8),
+        buildFireEvent(center, area.radiusKm, area.operationalBufferKm, 2.1, 35, now, 1, 92.4, 88.1),
+        buildFireEvent(center, area.radiusKm, area.operationalBufferKm, 4.2, 110, now, 2, 95.2, 91.6),
+        buildFireEvent(center, area.radiusKm, area.operationalBufferKm, 11.3, 205, now, 6, 84.7, 79.4),
+        buildFireEvent(center, area.radiusKm, area.operationalBufferKm, 13.7, 280, now, 15, 76.2, 73.8),
       ],
       weather: {
         observedAt: now,
@@ -78,8 +79,8 @@ export function buildMockScenario(area: MonitoredAreaEntity): GeneratedMockScena
     return {
       key,
       fireEvents: [
-        buildFireEvent(center, area.radiusKm, 6.1, 15, now, 3, 71.2, 69.4),
-        buildFireEvent(center, area.radiusKm, 8.9, 200, now, 11, 64.5, 62.3),
+        buildFireEvent(center, area.radiusKm, area.operationalBufferKm, 6.1, 15, now, 3, 71.2, 69.4),
+        buildFireEvent(center, area.radiusKm, area.operationalBufferKm, 8.9, 200, now, 11, 64.5, 62.3),
       ],
       weather: {
         observedAt: now,
@@ -109,6 +110,7 @@ export function buildMockScenario(area: MonitoredAreaEntity): GeneratedMockScena
 function buildFireEvent(
   center: GeoPoint,
   areaRadiusKm: number,
+  operationalBufferKm: number,
   distanceKm: number,
   bearingDegrees: number,
   now: Date,
@@ -123,7 +125,7 @@ function buildFireEvent(
     longitude: location.longitude,
     detectedAt: new Date(now.getTime() - hoursAgo * 60 * 60 * 1000),
     distanceKm: roundTo(distanceKm, 2),
-    relevance: distanceKm <= areaRadiusKm ? FireEventRelevance.INSIDE : FireEventRelevance.NEARBY,
+    relevance: classifyFireEventRelevance(distanceKm, areaRadiusKm, operationalBufferKm),
     intensity,
     confidence,
   };

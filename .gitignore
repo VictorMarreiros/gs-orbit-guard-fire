@@ -43,3 +43,4 @@ Thumbs.db
 # Misc
 .vscode/
 .idea/
+.playwright-mcp/

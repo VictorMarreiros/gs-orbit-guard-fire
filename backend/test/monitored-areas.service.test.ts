@@ -87,6 +87,29 @@ function run(): void {
     assert.equal(area.operationalBufferKm, 5);
     assert.equal(store.listAreasByUser(userId).length, 1);
   }
+
+  {
+    const store = new OrbitGuardStore();
+    const service = new MonitoredAreasService(store);
+
+    const area = service.create(
+      {
+        name: '  Fazenda Santa Luzia  ',
+        type: MonitoredAreaType.RURAL_COMMUNITY,
+        latitude: -15.7801234,
+        longitude: -47.9292345,
+        radiusKm: 12,
+      },
+      userId,
+    );
+
+    assert.equal(area.name, 'Fazenda Santa Luzia');
+    assert.equal(area.type, MonitoredAreaType.RURAL_COMMUNITY);
+    assert.equal(area.latitude, -15.780123);
+    assert.equal(area.longitude, -47.929234);
+    assert.equal(area.radiusKm, 12);
+    assert.equal(store.listAreasByUser(userId).length, 1);
+  }
 }
 
 run();

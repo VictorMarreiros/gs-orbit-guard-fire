@@ -1,34 +1,38 @@
-# Git Conventions
+# Convenções de Git
 
-This repository follows a simple git convention set that should be applied by default.
+Este repositório segue um conjunto simples de convenções de git que deve ser aplicado por padrão.
 
-## Branch Names
+## Nomes De Branch
 
-- Use a prefix that matches the work type.
-- Default prefix for feature work: `feat/`
-- Other allowed prefixes: `fix/`, `docs/`, `test/`, `chore/`
-- Keep the suffix short, lowercase, and kebab-case.
+- Use um prefixo que corresponda ao tipo de trabalho.
+- Prefixo padrão para funcionalidades: `feat/`
+- Outros prefixos permitidos: `fix/`, `docs/`, `test/`, `chore/`
+- Mantenha o sufixo curto, em minúsculas e com `kebab-case`
 
-Examples:
+Exemplos:
 
 - `feat/git-conventions`
 - `fix/alert-message`
 - `docs/api-contracts`
 
-## Commit Messages
+## Mensagens De Commit
 
-- Use a single-line subject only.
-- Do not add a body, paragraph breaks, bullet lists, or extra commentary.
-- Prefer Conventional Commits formatting.
-- Do not use empty scope parentheses like `feat()`: use `feat(scope): ...` when a scope exists, or `feat: ...` when it does not.
-- Keep the subject concise and focused on the change.
+- Use apenas um assunto em uma linha.
+- Não adicione corpo, quebras de parágrafo, bullets ou explicações extras.
+- Prefira o formato Conventional Commits.
+- Não use parênteses vazios de escopo como `feat()`: use `feat(scope): ...` quando houver escopo, ou `feat: ...` quando não houver.
+- Mantenha o assunto conciso e focado na mudança.
 
-Examples:
+Exemplos:
 
 - `feat(git): add branch naming rule`
 - `docs(git): define commit format`
 - `chore(ci): simplify validation step`
 
-## Practical Rule
+## Regra Prática
 
-If a commit message or branch name would be hard to scan in a quick history view, shorten it.
+Se o nome de branch ou a mensagem de commit ficar difícil de ler em um histórico rápido, encurte.
+
+## Fonte De Verdade
+
+Esta regra deve ser usada junto com [AGENTS.md](../AGENTS.md) e [docs/language-conventions.md](language-conventions.md).

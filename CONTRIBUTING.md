@@ -1,31 +1,31 @@
-# Contributing
+# Contribuindo
 
-This repository uses a fixed git convention to keep history easy to scan and automate.
+Este repositório usa convenções fixas de idioma e git para manter o histórico fácil de ler e automatizar.
 
 ## Branches
 
-- Default prefix for feature work: `feat/`
-- Other allowed prefixes: `fix/`, `docs/`, `test/`, `chore/`
-- Keep the suffix short, lowercase, and kebab-case
+- Prefixo padrão para trabalho de funcionalidade: `feat/`
+- Outros prefixos permitidos: `fix/`, `docs/`, `test/`, `chore/`
+- Mantenha o sufixo curto, em minúsculas e com `kebab-case`
 
-Examples:
+Exemplos:
 
 - `feat/git-conventions`
 - `docs/api-contracts`
 
 ## Commits
 
-- Use a single-line subject only
-- Do not add a body, paragraph breaks, or bullet lists
-- Prefer Conventional Commits formatting
-- Do not use empty scope parentheses like `feat()`
-- Use `feat(scope): ...` when a scope exists, or `feat: ...` when it does not
+- Use apenas um assunto em uma linha
+- Não adicione corpo, parágrafos ou listas
+- Prefira o formato Conventional Commits
+- Não use parênteses vazios de escopo como `feat()`
+- Use `feat(scope): ...` quando houver escopo, ou `feat: ...` quando não houver
 
-Examples:
+Exemplos:
 
 - `feat(git): add branch naming rule`
 - `docs(git): define commit format`
 
-## Source Of Truth
+## Fonte De Verdade
 
-If this file conflicts with the repository guide, follow [AGENTS.md](AGENTS.md) and [docs/git-conventions.md](docs/git-conventions.md).
+Se este arquivo entrar em conflito com o guia do repositório, siga [AGENTS.md](AGENTS.md), [docs/language-conventions.md](docs/language-conventions.md) e [docs/git-conventions.md](docs/git-conventions.md).

@@ -74,7 +74,27 @@ Os itens abaixo permanecem fora desta entrega e nao devem ser puxados para o inc
 - O dashboard pode nascer com agregacoes derivadas de base controlada, desde que seja coerente com o fluxo principal.
 - A camada geoespacial pode comecar simplificada, com calculo de distancia e representacao de raio, sem depender de PostGIS no primeiro incremento funcional.
 
-## 6. Vinculo entre PRD e escopo validado para implementacao
+## 6. Diferenca entre o MVP demonstrativo e a evolucao futura
+
+Esta tabela explicita o que esta sendo entregue agora e o que fica para a evolucao posterior.
+
+| Area | Agora no MVP demonstrativo | Evolucao futura |
+|---|---|---|
+| Autenticacao | Sessao simplificada ou demonstrativa, com contrato preparado para Bearer token | JWT completo, refresh token e politicas mais fortes de sessao |
+| Dados de risco | Focos, clima, alertas e dashboard podem vir de mocks controlados com fallback local | Integracoes reais, ingestao periodica e persistencia historica consistente |
+| Persistencia | Estrutura de dominio e seed controlado para sustentar a demo sem dependencia obrigatoria de banco em todas as telas | PostgreSQL com historico persistido e consultas mais completas |
+| Geoespacial | Calculo de distancia e raio com representacao simplificada | PostGIS e consultas espaciais mais ricas |
+| Alertas | Exibicao visual/in-app, sem envio real | Push, e-mail, SMS, WhatsApp ou outros canais operacionais |
+| Frontend | Fluxo navegavel e explicavel, validando o MVP com prototipo ou superficie equivalente | Implementacao frontend final com integracao completa aos contratos publicados |
+| Observabilidade | Logs e metricas minimas para acompanhar a demo | Telemetria ampliada, dashboards operacionais e monitoramento de producao |
+
+Em resumo:
+
+- O MVP comprova a viabilidade do fluxo principal.
+- Os mocks existem para manter a demo funcional e previsivel.
+- A evolucao futura substitui cada simulacao por integracoes reais sem alterar a semantica principal do produto.
+
+## 7. Vinculo entre PRD e escopo validado para implementacao
 
 ### Visao geral e escopo funcional
 
@@ -92,7 +112,7 @@ O MVP continua aderente a uma leitura incremental:
 - Fase 2 endurece arquitetura, APIs, banco e autenticacao.
 - Fase 3 adiciona integracoes reais e capacidades operacionais.
 
-## 7. Pendencias que ainda exigem validacao do time
+## 8. Pendencias que ainda exigem validacao do time
 
 - Confirmar se o primeiro incremento precisa subir banco local desde o dia 1 ou se pode iniciar com persistencia reduzida e seed controlado.
 - Confirmar a janela temporal padrao para considerar focos recentes no calculo de risco.
@@ -100,7 +120,7 @@ O MVP continua aderente a uma leitura incremental:
 - Confirmar se o estado de permissao negada entra no primeiro fluxo navegavel ou fica apenas preparado para iteracao seguinte.
 - Confirmar o nivel minimo de historico persistido necessario para o dashboard da demo.
 
-## 8. Resultado desta task
+## 9. Resultado desta task
 
 O escopo do MVP esta consolidado em documento e os itens fora de escopo estao explicitamente preservados, atendendo a parte documental da task `0.2`.
 

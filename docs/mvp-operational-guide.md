@@ -84,7 +84,21 @@ Os contratos documentados em `docs/api-contracts.md` representam a superfice HTT
 - O historico persistido de longo prazo ainda nao e requisito do MVP.
 - PostGIS e JWT seguem como evolucao arquitetural, nao como bloqueio do fluxo atual.
 
-## 8. Documentos relacionados
+## 8. Riscos residuais e encaminhamentos
+
+A entrega do MVP demonstrativo foi concluida sem pendencias bloqueadoras, mas alguns riscos permanecem registrados para a evolucao futura.
+
+| Risco residual | Impacto na entrega atual | Encaminhamento recomendado |
+|---|---|---|
+| Persistencia em memoria e seed controlado | O fluxo principal continua previsivel, mas nao ha historico duravel nem auditoria persistida entre reinicios | Evoluir para PostgreSQL com Prisma migrations e manter seeds versionados para a demo |
+| Integracoes externas mockadas com fallback | A semantica do produto foi validada, mas a conectividade real com NASA FIRMS, NASA POWER e INPE ainda nao foi exercitada em producao | Implementar adaptadores reais com feature flags, jobs e monitoramento de falhas |
+| Autenticacao demonstrativa | O controle de acesso funciona para o MVP, mas nao substitui uma politica de seguranca de producao | Evoluir para JWT e refresh token mantendo o contrato de `GET /auth/me` estavel |
+| Baseline de performance local | A velocidade valida a demo em memoria, mas pode mudar quando banco, rede e integracoes entrarem no caminho | Reexecutar benchmark apos persistencia e integracoes e estabelecer meta operacional |
+| Observabilidade minima | Logs e metricas cobrem o MVP, mas nao substituem telemetria de operacao real | Expandir rastreio, metricas e paines quando a fase operacional comecar |
+
+Nenhum dos pontos acima bloqueia o encerramento do MVP demonstrativo; eles ficam como encaminhamento para fases posteriores.
+
+## 9. Documentos relacionados
 
 - `README.md` - entrada principal do repositorio e panorama do produto.
 - `docs/mvp-foundation.md` - baseline de stack e estrategia.

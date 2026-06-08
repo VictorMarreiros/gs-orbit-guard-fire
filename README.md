@@ -16,6 +16,7 @@ O repositório já consolida a documentação funcional e técnica do MVP em um 
 - [`docs/mvp-data-model.md`](docs/mvp-data-model.md) - modelo de dados e persistencia.
 - [`docs/api-contracts.md`](docs/api-contracts.md) - contratos HTTP e formatos de request/response.
 - [`docs/mvp-scope-alignment.md`](docs/mvp-scope-alignment.md) - escopo fechado e fora de escopo preservados.
+- [`docs/mvp-release-checklist.md`](docs/mvp-release-checklist.md) - roteiro objetivo para demonstracao, validacao final e handoff.
 
 ---
 

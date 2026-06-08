@@ -510,9 +510,10 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
   - **Criterio de pronto:** documentacao cobre fluxo principal, mocks, contratos, regras do risco e limitacoes do MVP.
   - **Evidencia de validacao:** criado o guia funcional e tecnico em `docs/mvp-operational-guide.md` com fluxo principal, mocks e fallback, contratos HTTP, regras do motor de risco e limitacoes atuais; o `README.md` foi atualizado para apontar a documentacao consolidada e refletir o estado atual do MVP demonstrativo. Validacao executada com `git diff --check` e revisao manual do conteudo atualizado.
 
-- [ ] 13.2 Documentar decisoes de escopo e diferencas entre comportamento demonstrativo e evolucao futura.
+- [x] 13.2 Documentar decisoes de escopo e diferencas entre comportamento demonstrativo e evolucao futura.
   - **Referencias PRD:** fora de escopo, riscos, plano de release.
   - **Criterio de pronto:** leitores entendem claramente o que e MVP, o que e mock e o que fica para fases futuras.
+  - **Evidencia de validacao:** `docs/mvp-scope-alignment.md` recebeu a secao `Diferenca entre o MVP demonstrativo e a evolucao futura`, com tabela comparando autenticacao, dados de risco, persistencia, geoespacial, alertas, frontend e observabilidade entre a demo atual e a evolucao posterior. Validacao executada com `git diff --check` e revisao manual do trecho atualizado.
 
 ### 14. CI/CD, ambiente e release
 
@@ -526,23 +527,27 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
   - **Criterio de pronto:** ambiente de demo sempre inicializa com dados coerentes para o fluxo principal.
   - **Evidencia de validacao:** teste de consistencia adicionado em `backend/test/demo-seed-consistency.test.ts`, cobrindo o bootstrap demonstrativo via `OrbitGuardFireBackend`, o contexto de sessao demo (`maria@example.com` / `SenhaSegura123!`), as tres areas seedadas (`Fazenda Santa Luzia`, `Cooperativa Esperanca`, `Escola Verde`), os cenarios mockados de focos e clima, os scores `CRITICAL` / `MODERATE` / `LOW` e o dashboard inicial com `3` areas, `1` alerta ativo e score medio `47`. Validacao executada com `cd backend && node -r ts-node/register test\\demo-seed-consistency.test.ts`, `cd backend && npm run check` e `npm run check`, todas sem erros.
 
-- [ ] 14.3 Preparar checklist de demonstracao/release do MVP.
+- [x] 14.3 Preparar checklist de demonstracao/release do MVP.
   - **Tipo:** Release.
   - **Criterio de pronto:** existe roteiro objetivo para validar a entrega antes de apresentacao ou handoff.
+  - **Evidencia de validacao:** criado o checklist de release em `docs/mvp-release-checklist.md`, cobrindo preparacao, roteiro da demonstracao, criterios de aceite e handoff; o `README.md` foi atualizado para referenciar o novo documento. Validacao executada com `git diff --check` e revisao manual do roteiro em relacao ao plano de release do PRD, sem inconsistencias novas introduzidas.
 
 ### 15. Validacao final e aceite
 
-- [ ] 15.1 Confirmar cobertura final dos criterios de aceite do PRD.
+- [x] 15.1 Confirmar cobertura final dos criterios de aceite do PRD.
   - **Referencias PRD:** CA001, CA002, CA003, CA004, CA005, CA006, CA007, CA008, CA009, CA010.
   - **Criterio de pronto:** todos os criterios de aceite possuem evidencia de validacao automatizada ou manual.
+  - **Evidencia de validacao:** cobertura final confirmada por rastreio dos testes e validacoes ja entregues nas tasks 10.1 a 10.6, com cada criterio de aceite mapeado para evidencia funcional ou automatizada: CA001/CA002 em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`, CA003 em `backend/test/monitored-area-map.integration.test.ts` e `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`, CA004/CA005 em `backend/test/fire-events.integration.test.ts`, `backend/test/weather.integration.test.ts`, `backend/test/risk.integration.test.ts` e no prototipo, CA006 em `backend/test/risk-engine-alerts.test.ts` e `backend/test/risk.integration.test.ts`, CA007 em `backend/test/alert-message.test.ts`, `backend/test/alerts.integration.test.ts` e no prototipo, CA008/CA009 em `backend/test/dashboard.service.test.ts`, `backend/test/dashboard.integration.test.ts` e no prototipo, CA010 em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`. Validacao final executada com `npm run check` e `npm run check:mvp:test`, ambos sem erros.
 
-- [ ] 15.2 Revisar riscos residuais e pendencias abertas da entrega.
+- [x] 15.2 Revisar riscos residuais e pendencias abertas da entrega.
   - **Referencias PRD:** riscos, perguntas em aberto, RNF003, RNF004, RNF005.
   - **Criterio de pronto:** pendencias restantes estao registradas com impacto e encaminhamento claro.
+  - **Evidencia de validacao:** consolidado em `docs/mvp-operational-guide.md` o bloco `Riscos residuais e encaminhamentos`, registrando persistencia em memoria/seed controlado, integracoes externas mockadas com fallback, autenticacao demonstrativa, baseline de performance local e observabilidade minima, com impacto e encaminhamento para fases futuras. Revisao manual cruzada com `docs/mvp-foundation.md`, `docs/mvp-scope-alignment.md`, `docs/mvp-release-checklist.md` e `docs/api-contracts.md`, sem pendencias bloqueadoras adicionais identificadas.
 
-- [ ] 15.3 Validar documentacao final, rastreabilidade e preparo para extracao em issues.
+- [x] 15.3 Validar documentacao final, rastreabilidade e preparo para extracao em issues.
   - **Tipo:** QA.
   - **Criterio de pronto:** tasks e PRD estao coerentes, rastreaveis e prontas para desdobramento operacional.
+  - **Evidencia de validacao:** revisao manual cruzada de `README.md`, `docs/mvp-operational-guide.md`, `docs/mvp-scope-alignment.md`, `docs/mvp-release-checklist.md`, `docs/api-contracts.md`, `tasks/prd-orbitguard-fire-mvp.md` e `tasks/tasks-orbitguard-fire-mvp.md` confirmou que o fluxo de rastreabilidade esta fechado do PRD aos criterios de aceite e aos testes/documentos de suporte. Validacao tecnica complementar executada com `git diff --check` e `rg -n` para referencias de rastreio e status dos documentos, sem inconsistencias bloqueadoras para extracao operacional em issues.
 
 ## 9. Checklist de qualidade da lista de tasks
 

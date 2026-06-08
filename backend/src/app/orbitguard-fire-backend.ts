@@ -6,7 +6,9 @@ import { MonitoredAreasService } from '../monitored-areas/monitored-areas.servic
 import { RiskEngineService } from '../risk-engine/risk-engine.service';
 import { WeatherService } from '../weather/weather.service';
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
+import { BackendLogger, BackendLoggerLike } from '../common/logging/backend-logger';
 import { MonitoredAreaType } from '../common/domain/enums';
+import { OperationalMetricsRecorder, OperationalMetricsSnapshot } from '../common/metrics/operational-metrics';
 import {
   CreateMonitoredAreaRequestDto,
   MonitoredAreaMapResponseDto,
@@ -25,6 +27,10 @@ import { FireEventsResponseDto, GetFireEventsQueryDto } from '../fire-events/con
 import { WeatherSnapshotResponseDto } from '../weather/contracts/weather.contracts';
 import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegisterResponseDto, SessionContextResponseDto } from '../auth/contracts/auth.contracts';
 
+export interface OrbitGuardFireBackendOptions {
+  logger?: BackendLoggerLike;
+}
+
 export class OrbitGuardFireBackend {
   readonly store: OrbitGuardStore;
   readonly authService: AuthService;
@@ -34,23 +40,54 @@ export class OrbitGuardFireBackend {
   readonly riskEngineService: RiskEngineService;
   readonly alertsService: AlertsService;
   readonly dashboardService: DashboardService;
+  readonly logger: BackendLoggerLike;
+  readonly operationalMetricsRecorder: OperationalMetricsRecorder;
 
-  constructor() {
+  constructor(options: OrbitGuardFireBackendOptions = {}) {
+    this.logger = options.logger ?? new BackendLogger();
+    this.operationalMetricsRecorder = new OperationalMetricsRecorder();
     this.store = new OrbitGuardStore();
     this.authService = new AuthService(this.store);
     this.monitoredAreasService = new MonitoredAreasService(this.store);
-    this.fireEventsService = new FireEventsService(this.store, this.monitoredAreasService);
-    this.weatherService = new WeatherService(this.store, this.monitoredAreasService);
+    this.fireEventsService = new FireEventsService(
+      this.store,
+      this.monitoredAreasService,
+      this.logger,
+      this.operationalMetricsRecorder,
+    );
+    this.weatherService = new WeatherService(
+      this.store,
+      this.monitoredAreasService,
+      this.logger,
+      this.operationalMetricsRecorder,
+    );
     this.riskEngineService = new RiskEngineService(
       this.store,
       this.monitoredAreasService,
       this.fireEventsService,
       this.weatherService,
+      this.logger,
+      this.operationalMetricsRecorder,
     );
-    this.alertsService = new AlertsService(this.store, this.monitoredAreasService);
+    this.alertsService = new AlertsService(
+      this.store,
+      this.monitoredAreasService,
+      this.logger,
+      this.operationalMetricsRecorder,
+    );
     this.dashboardService = new DashboardService(this.store);
 
-    this.bootstrapDemoDataset();
+    this.logger.info('startup', 'startup-start', 'Bootstrapping OrbitGuard Fire demo backend.');
+    try {
+      this.bootstrapDemoDataset();
+      this.logger.info('startup', 'startup-success', 'OrbitGuard Fire demo backend is ready.');
+    } catch (error) {
+      this.operationalMetricsRecorder.recordIntegrationFailure('startup');
+      this.logger.error('startup', 'startup-failure', 'Failed to bootstrap OrbitGuard Fire demo backend.', {
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
   register(input: RegisterRequestDto): RegisterResponseDto {
@@ -107,6 +144,11 @@ export class OrbitGuardFireBackend {
     return this.dashboardService.getSummary(user.id);
   }
 
+  getOperationalMetrics(accessToken?: string): OperationalMetricsSnapshot {
+    const { user } = this.authService.resolveSession(accessToken);
+    return this.operationalMetricsRecorder.snapshotFromDashboard(this.dashboardService.getSummary(user.id));
+  }
+
   private bootstrapDemoDataset(): void {
     const demoUser = this.authService.bootstrapDemoUser();
 
@@ -144,6 +186,6 @@ export class OrbitGuardFireBackend {
   }
 }
 
-export function createOrbitGuardFireBackend(): OrbitGuardFireBackend {
-  return new OrbitGuardFireBackend();
+export function createOrbitGuardFireBackend(options: OrbitGuardFireBackendOptions = {}): OrbitGuardFireBackend {
+  return new OrbitGuardFireBackend(options);
 }

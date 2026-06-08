@@ -37,6 +37,22 @@ function buildPrimaryAction(level: RiskLevel): string {
   return 'Acompanhe a area com mais frequencia ao longo do dia.';
 }
 
+function formatRiskLevelLabel(level: RiskLevel): string {
+  if (level === RiskLevel.CRITICAL) {
+    return 'critico';
+  }
+
+  if (level === RiskLevel.HIGH) {
+    return 'alto';
+  }
+
+  if (level === RiskLevel.MODERATE) {
+    return 'moderado';
+  }
+
+  return 'baixo';
+}
+
 function buildFactorActions(factors: RiskFactorResponseDto[]): string[] {
   const actions = new Set<string>();
 
@@ -78,11 +94,12 @@ export function buildAlertContent(
   const factorSentence = formatFactorLabels(factors);
   const primaryAction = buildPrimaryAction(level);
   const factorActions = buildFactorActions(factors);
+  const riskLabel = formatRiskLevelLabel(level);
 
   return {
     title,
     summary,
-    message: `${areaName} em risco ${level.toLowerCase()}. ${factorSentence} e o cenario exige atencao imediata. ${primaryAction}`,
+    message: `${areaName} em risco ${riskLabel}. ${factorSentence} e o cenario exige atencao imediata. ${primaryAction}`,
     recommendedActions: [primaryAction, ...factorActions].slice(0, 3),
   };
 }

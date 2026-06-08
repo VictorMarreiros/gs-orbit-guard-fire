@@ -11,58 +11,100 @@ import { MonitoredAreasService } from '../monitored-areas/monitored-areas.servic
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
 import { AlertEntity } from './entities/alert.entity';
 import { buildAlertContent } from './alert-message';
+import { BackendLogger, BackendLoggerLike } from '../common/logging/backend-logger';
+import { OperationalMetricsRecorder } from '../common/metrics/operational-metrics';
 
 export class AlertsService {
   constructor(
     private readonly store: OrbitGuardStore,
     private readonly monitoredAreasService: MonitoredAreasService,
+    private readonly logger: BackendLoggerLike = new BackendLogger(),
+    private readonly operationalMetricsRecorder: OperationalMetricsRecorder = new OperationalMetricsRecorder(),
   ) {}
 
   upsertFromRiskCalculation(risk: RiskCalculationResponseDto, userId: string): AlertEntity | undefined {
-    if (!risk.alertTriggered) {
-      this.store.deactivateAlertsForArea(risk.monitoredAreaId);
-      return undefined;
-    }
-
-    const area = this.monitoredAreasService.getEntityById(risk.monitoredAreaId, userId);
-    const content = buildAlertContent(area.name, risk.level, risk.summary, risk.factors);
-
-    const existing = this.store.resolveExistingActiveAlert(area.id);
-    if (existing) {
-      existing.status = AlertStatus.ACTIVE;
-      existing.channel = AlertChannel.IN_APP;
-      existing.level = risk.level;
-      existing.severity = risk.severity;
-      existing.riskScoreId = risk.id;
-      existing.title = content.title;
-      existing.message = content.message;
-      existing.summary = content.summary;
-      existing.recommendedActions = content.recommendedActions;
-      existing.triggeredAt = new Date(risk.evaluatedAt);
-      existing.updatedAt = new Date();
-      this.store.upsertAlert(existing);
-      return existing;
-    }
-
-    const alert: AlertEntity = {
-      id: randomUUID(),
-      monitoredAreaId: area.id,
+    this.logger.info('alerts', 'alert-generation-start', 'Starting alert generation.', {
+      monitoredAreaId: risk.monitoredAreaId,
       riskScoreId: risk.id,
-      status: AlertStatus.ACTIVE,
-      channel: AlertChannel.IN_APP,
-      level: risk.level,
-      severity: risk.severity,
-      title: content.title,
-      message: content.message,
-      summary: content.summary,
-      recommendedActions: content.recommendedActions,
-      triggeredAt: new Date(risk.evaluatedAt),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+      riskLevel: risk.level,
+      alertTriggered: risk.alertTriggered,
+    });
 
-    this.store.upsertAlert(alert);
-    return alert;
+    try {
+      if (!risk.alertTriggered) {
+        this.store.deactivateAlertsForArea(risk.monitoredAreaId);
+        this.logger.info('alerts', 'alert-generation-success', 'Alert generation completed without an active alert.', {
+          monitoredAreaId: risk.monitoredAreaId,
+          riskScoreId: risk.id,
+          alertTriggered: false,
+          alertStatus: 'NONE',
+        });
+        return undefined;
+      }
+
+      const area = this.monitoredAreasService.getEntityById(risk.monitoredAreaId, userId);
+      const content = buildAlertContent(area.name, risk.level, risk.summary, risk.factors);
+
+      const existing = this.store.resolveExistingActiveAlert(area.id);
+      if (existing) {
+        existing.status = AlertStatus.ACTIVE;
+        existing.channel = AlertChannel.IN_APP;
+        existing.level = risk.level;
+        existing.severity = risk.severity;
+        existing.riskScoreId = risk.id;
+        existing.title = content.title;
+        existing.message = content.message;
+        existing.summary = content.summary;
+        existing.recommendedActions = content.recommendedActions;
+        existing.triggeredAt = new Date(risk.evaluatedAt);
+        existing.updatedAt = new Date();
+        this.store.upsertAlert(existing);
+        this.logger.info('alerts', 'alert-generation-success', 'Alert generation completed using an existing active alert.', {
+          monitoredAreaId: area.id,
+          riskScoreId: risk.id,
+          alertId: existing.id,
+          alertStatus: existing.status,
+          alertLevel: existing.level,
+        });
+        return existing;
+      }
+
+      const alert: AlertEntity = {
+        id: randomUUID(),
+        monitoredAreaId: area.id,
+        riskScoreId: risk.id,
+        status: AlertStatus.ACTIVE,
+        channel: AlertChannel.IN_APP,
+        level: risk.level,
+        severity: risk.severity,
+        title: content.title,
+        message: content.message,
+        summary: content.summary,
+        recommendedActions: content.recommendedActions,
+        triggeredAt: new Date(risk.evaluatedAt),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      this.store.upsertAlert(alert);
+      this.logger.info('alerts', 'alert-generation-success', 'Alert generation completed.', {
+        monitoredAreaId: alert.monitoredAreaId,
+        riskScoreId: alert.riskScoreId,
+        alertId: alert.id,
+        alertStatus: alert.status,
+        alertLevel: alert.level,
+      });
+      return alert;
+    } catch (error) {
+      this.operationalMetricsRecorder.recordIntegrationFailure('alerts');
+      this.logger.error('alerts', 'alert-generation-failure', 'Alert generation failed.', {
+        monitoredAreaId: risk.monitoredAreaId,
+        riskScoreId: risk.id,
+        riskLevel: risk.level,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   }
 
   list(userId: string, query: GetAlertsQueryDto): AlertsResponseDto {

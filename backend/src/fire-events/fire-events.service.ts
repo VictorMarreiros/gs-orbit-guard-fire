@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { DataOrigin, FireEventRelevance, FireEventSource } from '../common/domain/enums';
 import { isRelevantFireEvent } from '../common/domain/fire-event-proximity';
 import { roundTo } from '../common/domain/math';
+import { BackendLogger, BackendLoggerLike } from '../common/logging/backend-logger';
 import {
   FireEventItemDto,
   FireEventsResponseDto,
@@ -11,11 +12,14 @@ import { MonitoredAreasService } from '../monitored-areas/monitored-areas.servic
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
 import { buildMockScenario, fallbackOrigin, fallbackSource } from '../integrations/mocks/mock-data';
 import { FireEventEntity } from './entities/fire-event.entity';
+import { OperationalMetricsRecorder } from '../common/metrics/operational-metrics';
 
 export class FireEventsService {
   constructor(
     private readonly store: OrbitGuardStore,
     private readonly monitoredAreasService: MonitoredAreasService,
+    private readonly logger: BackendLoggerLike = new BackendLogger(),
+    private readonly operationalMetricsRecorder: OperationalMetricsRecorder = new OperationalMetricsRecorder(),
   ) {}
 
   getByAreaId(areaId: string, query: GetFireEventsQueryDto, userId: string): FireEventsResponseDto {
@@ -23,12 +27,41 @@ export class FireEventsService {
     const periodHours = query.periodHours ?? 24;
     const scenario = buildMockScenario(area);
 
+    this.logger.info('fire-events', 'mock-collection-start', 'Starting mock fire-event collection.', {
+      areaId,
+      periodHours,
+    });
     this.store.setScenario(area.id, scenario.key);
     try {
       this.ensureSeededFireEvents(area.id, scenario);
-      return this.buildResponse(area.id, periodHours, area.radiusKm, area.operationalBufferKm);
-    } catch {
-      return this.buildFallbackResponse(area.id, periodHours, area.radiusKm, area.operationalBufferKm, scenario);
+      const response = this.buildResponse(area.id, periodHours, area.radiusKm, area.operationalBufferKm);
+      this.logger.info('fire-events', 'mock-collection-success', 'Mock fire-event collection completed.', {
+        areaId,
+        periodHours,
+        total: response.summary.total,
+        insideCount: response.summary.insideCount,
+        nearbyCount: response.summary.nearbyCount,
+        usedFallback: false,
+      });
+      return response;
+    } catch (error) {
+      this.operationalMetricsRecorder.recordIntegrationFailure('fire-events');
+      const fallbackResponse = this.buildFallbackResponse(area.id, periodHours, area.radiusKm, area.operationalBufferKm, scenario);
+      this.logger.error('fire-events', 'mock-collection-failure', 'Mock fire-event collection failed; using fallback dataset.', {
+        areaId,
+        periodHours,
+        usedFallback: true,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
+      this.logger.info('fire-events', 'mock-collection-success', 'Mock fire-event collection completed using fallback dataset.', {
+        areaId,
+        periodHours,
+        total: fallbackResponse.summary.total,
+        insideCount: fallbackResponse.summary.insideCount,
+        nearbyCount: fallbackResponse.summary.nearbyCount,
+        usedFallback: true,
+      });
+      return fallbackResponse;
     }
   }
 

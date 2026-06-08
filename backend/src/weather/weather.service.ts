@@ -6,11 +6,15 @@ import { MonitoredAreasService } from '../monitored-areas/monitored-areas.servic
 import { OrbitGuardStore } from '../integrations/memory/orbitguard-store';
 import { buildMockScenario } from '../integrations/mocks/mock-data';
 import { interpretWeatherForRisk } from '../common/domain/weather-rules';
+import { BackendLogger, BackendLoggerLike } from '../common/logging/backend-logger';
+import { OperationalMetricsRecorder } from '../common/metrics/operational-metrics';
 
 export class WeatherService {
   constructor(
     private readonly store: OrbitGuardStore,
     private readonly monitoredAreasService: MonitoredAreasService,
+    private readonly logger: BackendLoggerLike = new BackendLogger(),
+    private readonly operationalMetricsRecorder: OperationalMetricsRecorder = new OperationalMetricsRecorder(),
   ) {}
 
   getLatestByAreaId(areaId: string, userId: string): WeatherSnapshotResponseDto {
@@ -18,22 +22,50 @@ export class WeatherService {
     const scenario = buildMockScenario(area);
     let existingSnapshot: WeatherSnapshotEntity | undefined;
 
+    this.logger.info('weather', 'mock-collection-start', 'Starting mock weather collection.', {
+      areaId,
+    });
+
     try {
       existingSnapshot = this.store.getLatestWeatherSnapshot(areaId);
-    } catch {
-      return this.buildFallbackResponse(areaId, scenario);
+    } catch (error) {
+      this.operationalMetricsRecorder.recordIntegrationFailure('weather');
+      const response = this.buildFallbackResponse(areaId, scenario);
+      this.logger.error('weather', 'mock-collection-failure', 'Mock weather collection failed; using fallback dataset.', {
+        areaId,
+        usedFallback: true,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
+      this.logger.info('weather', 'mock-collection-success', 'Mock weather collection completed using fallback dataset.', {
+        areaId,
+        usedFallback: true,
+        sourceLabel: response.sourceLabel,
+      });
+      return response;
     }
 
     if (!existingSnapshot) {
-      return this.createAndReturnFallbackSnapshot(areaId, scenario);
+      const response = this.createAndReturnFallbackSnapshot(areaId, scenario);
+      this.logger.info('weather', 'mock-collection-success', 'Mock weather collection completed using fallback dataset.', {
+        areaId,
+        usedFallback: true,
+        sourceLabel: response.sourceLabel,
+      });
+      return response;
     }
 
     const interpretation = interpretWeatherForRisk(existingSnapshot, scenario.weather);
     if (interpretation.usedFallback) {
-      return this.updateAndReturnFallbackSnapshot(existingSnapshot, scenario, interpretation);
+      const response = this.updateAndReturnFallbackSnapshot(existingSnapshot, scenario, interpretation);
+      this.logger.info('weather', 'mock-collection-success', 'Mock weather collection completed using fallback normalization.', {
+        areaId,
+        usedFallback: true,
+        sourceLabel: response.sourceLabel,
+      });
+      return response;
     }
 
-    return {
+    const response = {
       id: existingSnapshot.id,
       monitoredAreaId: existingSnapshot.monitoredAreaId,
       dataOrigin: existingSnapshot.dataOrigin,
@@ -45,6 +77,13 @@ export class WeatherService {
       windSpeedMs: interpretation.windSpeedMs,
       usedFallback: existingSnapshot.dataOrigin !== DataOrigin.LIVE,
     };
+    this.logger.info('weather', 'mock-collection-success', 'Mock weather collection completed.', {
+      areaId,
+      usedFallback: response.usedFallback,
+      sourceLabel: response.sourceLabel,
+      dataOrigin: response.dataOrigin,
+    });
+    return response;
   }
 
   private createAndReturnFallbackSnapshot(

@@ -22,6 +22,7 @@ Exemplos:
 - Prefira o formato Conventional Commits.
 - Não use parênteses vazios de escopo como `feat()`: use `feat(scope): ...` quando houver escopo, ou `feat: ...` quando não houver.
 - Mantenha o assunto conciso e focado na mudança.
+- O subject deve idealmente ter até 60 caracteres; até 72 ainda costuma ser aceitável.
 
 Exemplos:
 

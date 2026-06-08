@@ -78,6 +78,7 @@ Evite misturar documentação, modelagem de domínio e trabalho de contratos de 
 - Prefira subjects no estilo Conventional Commits, por exemplo `feat(git): add branch naming rule` ou `docs(git): define commit format`.
 - Não use parênteses vazios como `feat()`: use `feat(scope): ...` quando houver scope, ou `feat: ...` quando não houver.
 - Mantenha o subject no imperativo, conciso e limitado à mudança em si.
+- O subject deve idealmente ter até 60 caracteres; até 72 ainda costuma ser aceitável.
 - Quando uma alteração for pequena e não precisar de scope, use o subject mais curto possível que ainda comunique a intenção.
 
 Fonte: `docs/git-conventions.md`.

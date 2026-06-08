@@ -610,12 +610,48 @@ function runRiskFlowWithFallbackScenario() {
   assert.equal(env.elements['risk-source-chip'].textContent, 'Fonte: mock controlado');
   assert.equal(env.elements['risk-factor-list'].innerHTML.includes('NEAR_FIRE_CRITICAL'), true);
   assert.equal(env.elements['alert-panel'].hidden, false);
+  assert.equal(env.elements['alert-status-chip'].textContent, 'Alerta critico ativo');
   assert.equal(env.elements['alert-title'].textContent, 'Risco critico de queimada em Fazenda Santa Luzia');
+  assert.equal(
+    env.elements['alert-summary'].textContent,
+    'Fazenda Santa Luzia apresenta risco critico nas ultimas 24 horas com foco criticamente proximo e concentracao recente de focos.',
+  );
   assert.equal(env.elements['alert-status'].textContent, 'ACTIVE');
+  assert.equal(env.elements['alert-channel'].textContent, 'IN_APP');
+  assert.equal(env.elements['alert-level'].textContent, 'CRITICAL');
+  assert.equal(env.elements['alert-severity'].textContent, 'DANGER');
+  assert.match(env.elements['alert-message'].textContent, /ultimas 24 horas/i);
+  assert.equal(countOccurrences(env.elements['alert-causes'].innerHTML, 'alert-list-item'), 5);
+  assert.equal(
+    env.elements['alert-causes'].innerHTML.includes('Ao menos um foco ficou a ate 5 km da area monitorada.'),
+    true,
+  );
+  assert.equal(countOccurrences(env.elements['alert-actions'].innerHTML, 'alert-list-item'), 3);
+  assert.equal(
+    env.elements['alert-actions'].innerHTML.includes('Acione a vigilancia local imediatamente.'),
+    true,
+  );
+  assert.equal(
+    env.elements['risk-score-summary'].textContent,
+    'Fazenda Santa Luzia apresenta risco critico nas ultimas 24 horas com foco criticamente proximo e concentracao recente de focos.',
+  );
+  assert.match(env.elements['risk-score-brief'].textContent, /alerta preventivo/i);
+  assert.match(env.elements['dashboard-executive-note'].textContent, /maior risco demonstrativo/i);
   assert.equal(env.elements['dashboard-panel'].hidden, false);
   assert.equal(env.elements['dashboard-alerts-count'].textContent, '1');
+  assert.equal(env.elements['notification-status-chip'].textContent, 'Notificacao ativa');
   assert.equal(env.elements['notification-panel'].hidden, false);
+  assert.equal(env.elements['notification-empty-state'].hidden, true);
+  assert.equal(env.elements['notification-headline'].textContent, 'Risco critico de queimada em Fazenda Santa Luzia');
+  assert.equal(env.elements['notification-subhead'].textContent, 'IN_APP | DANGER');
   assert.equal(env.elements['notification-badge'].textContent, 'CRITICAL');
+  assert.equal(
+    env.elements['notification-body'].textContent,
+    'Area Fazenda Santa Luzia: Fazenda Santa Luzia apresenta risco critico nas ultimas 24 horas com foco criticamente proximo e concentracao recente de focos.',
+  );
+  assert.equal(env.elements['notification-context'].textContent, 'Preview mobile alinhado ao alerta preventivo gerado pelo score.');
+  assert.equal(countOccurrences(env.elements['notification-actions'].innerHTML, 'alert-chip'), 2);
+  assert.match(env.elements['notification-time'].textContent, /^\d{2}:\d{2}$/);
 
   env.elements['fallback-toggle'].dispatchEvent('click');
 
@@ -636,10 +672,47 @@ function runRiskFlowWithFallbackScenario() {
   assert.equal(env.elements['notification-body'].textContent.includes('Fazenda Santa Luzia'), true);
 }
 
+function runDashboardEmptyStateFlow() {
+  const env = createPrototypeEnvironment();
+  loadPrototype(env);
+
+  submitLogin(env, 'maria@example.com', 'SenhaSegura123!');
+  submitArea(env, {
+    name: 'Sitio Boa Esperanca',
+    type: 'RURAL_PROPERTY',
+    latitude: '-16.1200',
+    longitude: '-47.8900',
+    radiusKm: '4',
+  });
+
+  assert.equal(env.elements['risk-score-value'].textContent, '0');
+  assert.equal(env.elements['risk-level-pill'].textContent, 'LOW');
+  assert.equal(env.elements['alert-panel'].hidden, true);
+  assert.equal(env.elements['dashboard-panel'].hidden, false);
+  assert.equal(env.elements['dashboard-status-chip'].textContent, 'Dashboard sem alertas ativos em Sitio Boa Esperanca');
+  assert.equal(env.elements['dashboard-empty-state'].hidden, false);
+  assert.equal(
+    env.elements['dashboard-empty-state'].textContent,
+    'Nao ha alertas ativos para Sitio Boa Esperanca neste momento. O dashboard permanece util para acompanhar a area monitorada e o historico recente.',
+  );
+  assert.equal(env.elements['dashboard-alerts-count'].textContent, '0');
+  assert.equal(env.elements['notification-status-chip'].textContent, 'Sem notificacao ativa');
+  assert.equal(env.elements['notification-empty-state'].hidden, false);
+  assert.equal(env.elements['notification-panel'].hidden, true);
+  assert.equal(env.elements['dashboard-average-score'].textContent, '0');
+  assert.equal(env.elements['dashboard-fire-count'].textContent, '0');
+  assert.equal(env.elements['dashboard-priority-list'].innerHTML.includes('Nenhuma area prioritaria no momento'), true);
+  assert.equal(
+    env.elements['dashboard-executive-note'].textContent,
+    'A area Sitio Boa Esperanca permanece em leitura controlada; o dashboard mostra um estado vazio sem alertas ativos.',
+  );
+}
+
 function main() {
   runSuccessfulAreaFlow();
   runInvalidAreaFlow();
   runRiskFlowWithFallbackScenario();
+  runDashboardEmptyStateFlow();
   console.log('orbitguard-fire prototype area flow checks passed');
 }
 

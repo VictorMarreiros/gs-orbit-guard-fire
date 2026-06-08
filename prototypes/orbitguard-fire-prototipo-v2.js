@@ -412,10 +412,26 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         return { level: 'CRITICAL', severity: 'DANGER' };
       }
 
+      function formatRiskLevelLabel(level) {
+        if (level === 'CRITICAL') {
+          return 'critico';
+        }
+
+        if (level === 'HIGH') {
+          return 'alto';
+        }
+
+        if (level === 'MODERATE') {
+          return 'moderado';
+        }
+
+        return 'baixo';
+      }
+
       function buildRiskSummary(areaName, factors, level) {
         const factorLabels = factors.slice(0, 2).map((factor) => factor.label.toLowerCase());
         const detail = factorLabels.length ? ` com ${factorLabels.join(' e ')}` : '';
-        return `${areaName} apresenta risco ${level.toLowerCase()} nas ultimas 24 horas${detail}.`;
+        return `${areaName} apresenta risco ${formatRiskLevelLabel(level)} nas ultimas 24 horas${detail}.`;
       }
 
       function buildAlertFromAnalysis(area, analysis, weather) {
@@ -625,7 +641,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           return alert;
         }
 
-        alertStatusChip.textContent = `Alerta ${alert.level.toLowerCase()} ativo`;
+        alertStatusChip.textContent = `Alerta ${formatRiskLevelLabel(alert.level)} ativo`;
         alertEmptyState.hidden = true;
         alertPanel.hidden = false;
         alertTitle.textContent = alert.title;

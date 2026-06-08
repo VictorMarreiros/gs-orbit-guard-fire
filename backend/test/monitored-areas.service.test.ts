@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { MonitoredAreaType } from '../src/common/domain/enums';
+import { roundTo } from '../src/common/domain/math';
 import { ValidationApplicationError } from '../src/common/errors';
 import { OrbitGuardStore } from '../src/integrations/memory/orbitguard-store';
 import { MonitoredAreasService } from '../src/monitored-areas/monitored-areas.service';
@@ -109,6 +110,39 @@ function run(): void {
     assert.equal(area.longitude, -47.929234);
     assert.equal(area.radiusKm, 12);
     assert.equal(store.listAreasByUser(userId).length, 1);
+  }
+
+  {
+    const store = new OrbitGuardStore();
+    const service = new MonitoredAreasService(store);
+
+    const createdArea = service.create(
+      {
+        name: 'Fazenda Horizonte',
+        type: MonitoredAreaType.CONSERVATION_AREA,
+        latitude: -15.7801234,
+        longitude: -47.9292345,
+        radiusKm: 14.987,
+      },
+      userId,
+    );
+
+    const mapResponse = service.getById(createdArea.id, userId);
+
+    assert.deepEqual(mapResponse.area, createdArea);
+    assert.deepEqual(mapResponse.mapContext.center, {
+      latitude: -15.780123,
+      longitude: -47.929234,
+    });
+    assert.equal(mapResponse.mapContext.monitoredRadiusKm, 14.99);
+    assert.equal(roundTo(mapResponse.mapContext.operationalRadiusKm, 2), 19.99);
+    assert.deepEqual(mapResponse.mapContext.legend, [
+      { key: 'area-center', label: 'Centro da area' },
+      { key: 'monitored-radius', label: 'Raio monitorado' },
+      { key: 'operational-radius', label: 'Vizinhanca operacional' },
+      { key: 'fire-inside', label: 'Foco dentro do raio' },
+      { key: 'fire-nearby', label: 'Foco proximo ao raio' },
+    ]);
   }
 }
 

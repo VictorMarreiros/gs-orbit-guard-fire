@@ -370,21 +370,25 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
   - **Criterio de pronto:** testes cobrem sucesso, campos invalidos e bloqueios principais.
   - **Evidencia de validacao:** cobertura ampliada em `backend/test/monitored-areas.service.test.ts` com caminho feliz adicional para `name` com `trim`, preservando a normalizacao observavel do cadastro; validacao executada com `cd backend && npm run check` e `cd backend && node -r ts-node/register test\\monitored-areas.service.test.ts`, com saidas `check` sem erros e `monitored-areas validation checks passed`.
 
-- [ ] 8.2 Criar testes unitarios para transformacao e exibicao do contexto espacial.
+- [x] 8.2 Criar testes unitarios para transformacao e exibicao do contexto espacial.
   - **Referencias PRD:** RF002, RN002, CA003.
   - **Criterio de pronto:** transformacoes de coordenadas, raio e legenda possuem cobertura.
+  - **Evidencia de validacao:** cobertura adicionada em `backend/test/monitored-areas.service.test.ts` para `MonitoredAreasService.getById`, verificando centro espacial normalizado, raio monitorado, raio operacional e legenda do `mapContext`; validacao executada com `cd backend && node -r ts-node/register test\\monitored-areas.service.test.ts` e `cd backend && npm run check`, ambos com saida sem erros.
 
-- [ ] 8.3 Criar testes unitarios para adaptadores de dados simulados de focos e clima.
+- [x] 8.3 Criar testes unitarios para adaptadores de dados simulados de focos e clima.
   - **Referencias PRD:** RF003, RF004, RNF002, CA005.
   - **Criterio de pronto:** mocks e fallbacks retornam estruturas consistentes.
+  - **Evidencia de validacao:** teste adicionado em `backend/test/mock-data-adapters.test.ts` cobrindo os cenarios mockados `CRITICAL`, `MODERATE` e `LOW` via `FireEventsService` e `WeatherService`, com validacao automatizada executada por `cd backend && npm run check` e `cd backend && node -r ts-node/register test\\mock-data-adapters.test.ts`, ambos sem erros.
 
-- [ ] 8.4 Criar testes unitarios para motor de risco, classificacao e alerta explicavel.
+- [x] 8.4 Criar testes unitarios para motor de risco, classificacao e alerta explicavel.
   - **Referencias PRD:** RF005, RF006, RN003, RN004, RN005, RN006, RN007, CA006, CA007.
   - **Criterio de pronto:** cenarios baixo, moderado, alto e critico ficam cobertos.
+  - **Evidencia de validacao:** novo teste em `backend/test/risk-engine-alerts.test.ts` cobre `LOW`, `MODERATE`, `HIGH` e `CRITICAL` no backend em memoria, validando score, classificacao, severidade, fatores explicaveis e geracao de alerta; validacao executada com `cd backend && npm run check` e `cd backend && node -r ts-node/register test\\risk-engine-alerts.test.ts`, ambos sem erros.
 
-- [ ] 8.5 Criar testes unitarios para agregacoes do dashboard.
+- [x] 8.5 Criar testes unitarios para agregacoes do dashboard.
   - **Referencias PRD:** RF007, CA009.
   - **Criterio de pronto:** indicadores agregados e estado vazio ficam cobertos.
+  - **Evidencia de validacao:** teste adicionado em `backend/test/dashboard.service.test.ts` cobrindo o estado vazio e um snapshot populado com tres areas, validando `monitoredAreasCount`, `activeAlertsCount`, `averageRiskScore`, `recentFireEventsCount`, `areasByRiskLevel`, `priorityAreas` e `hasActiveAlerts`; validacao executada com `cd backend && node -r ts-node/register test\\dashboard.service.test.ts` e `cd backend && npm run check`, ambos sem erros.
 
 ### 9. Testes de integracao/API
 

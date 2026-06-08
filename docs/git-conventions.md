@@ -15,6 +15,24 @@ Exemplos:
 - `fix/alert-message`
 - `docs/api-contracts`
 
+## Estratégia De Commit
+
+- Prefira um commit por assunto lógico, com o menor recorte que ainda deixe o histórico legível.
+- Quando a mudança atingir áreas diferentes, separe em commits distintos se cada parte puder ser validada sozinha.
+- Evite misturar documentação, domínio, contratos de API, testes e tooling no mesmo commit quando a separação for clara.
+- Se a alteração precisar ser atômica para preservar coerência, use um único commit com escopo representativo da parte dominante.
+- Mantenha a sequência natural do trabalho: primeiro documentação e decisões, depois contratos e domínio, depois implementação e por fim testes e ajustes de qualidade.
+- Use `docs` para documentação e rastreabilidade, `feat` para comportamento novo, `test` para validação e `chore` para setup, tooling e manutenção.
+- Prefira subjects curtos que indiquem o resultado final da mudança, não a lista de arquivos alterados.
+
+Exemplos de recorte:
+
+- `docs(git): define commit format`
+- `feat(domain): add monitored area model`
+- `feat(api): add risk calculation contract`
+- `test(risk): cover critical scenario`
+- `chore(ci): simplify validation pipeline`
+
 ## Mensagens De Commit
 
 - Use apenas um assunto em uma linha.

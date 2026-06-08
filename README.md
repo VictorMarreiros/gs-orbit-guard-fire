@@ -17,6 +17,7 @@ O repositório já consolida a documentação funcional e técnica do MVP em um 
 - [`docs/api-contracts.md`](docs/api-contracts.md) - contratos HTTP e formatos de request/response.
 - [`docs/mvp-scope-alignment.md`](docs/mvp-scope-alignment.md) - escopo fechado e fora de escopo preservados.
 - [`docs/mvp-release-checklist.md`](docs/mvp-release-checklist.md) - roteiro objetivo para demonstracao, validacao final e handoff.
+- [`docs/guia-pratico-de-execucao.md`](docs/guia-pratico-de-execucao.md) - passo a passo prático para instalar, iniciar e validar o projeto.
 
 ---
 
@@ -669,6 +670,10 @@ O MVP será considerado bem-sucedido se demonstrar:
 Projeto acadêmico desenvolvido para fins educacionais e demonstrativos.
 
 ---
+
+## Guia Pratico de Execucao
+
+O passo a passo prático para instalar, subir e validar o projeto está em [`docs/guia-pratico-de-execucao.md`](docs/guia-pratico-de-execucao.md).
 
 ## 23. Status do Projeto
 

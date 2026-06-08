@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'orbitguard-fire-demo-session';
+﻿const STORAGE_KEY = 'orbitguard-fire-demo-session';
       const DEMO_USER = {
         id: 'cb81a12d-9c0b-47bd-b0fd-32516f3d95d4',
         name: 'Maria Oliveira',
@@ -18,12 +18,19 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         },
       };
 
+      const THEME_STORAGE_KEY = 'orbitguard-fire-demo-theme';
+      const THEME_MODES = {
+        DARK: 'dark',
+        LIGHT: 'light',
+      };
+
       const hero = document.querySelector('.hero');
       const loginView = document.getElementById('login-view');
       const appView = document.getElementById('app-view');
       const loginForm = document.getElementById('login-form');
       const loginError = document.getElementById('login-error');
       const successBanner = document.getElementById('success-banner');
+      const themeToggleButton = document.getElementById('theme-toggle');
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
       const demoFillButton = document.getElementById('demo-fill');
@@ -151,6 +158,29 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         LIVE: 'LIVE',
         FALLBACK: 'FALLBACK',
       };
+      const UI_COPY = {
+        errors: {
+          loginInvalid: 'Email ou senha inválidos. Use o acesso pronto para continuar.',
+          areaInvalidSummary: 'Revise os campos destacados antes de continuar.',
+          areaForm: 'Preencha os campos obrigatórios para salvar a área.',
+          permissionDenied: 'Esta sessão não tem acesso a áreas privadas.',
+          permissionDeniedBlocked: (areaLabel) =>
+            `A sessão demo tentou abrir ${areaLabel}, mas ela não está liberada nesta demonstração.`,
+          permissionDeniedBlockedWithAccess: (areaLabel) =>
+            `A sessão poderia abrir ${areaLabel}, mas o bloqueio foi mantido para a demonstração.`,
+        },
+        fallback: {
+          title: 'Dados preparados em uso',
+          sourceLabel: 'Dados preparados',
+          modeLabel: 'Consulta mantida',
+          usePrepared: 'Usar dados preparados',
+          returnToDefault: 'Voltar aos dados padrão',
+          mapText:
+            'As fontes externas estão indisponíveis agora. O mapa segue com dados preparados para manter a leitura da área.',
+          riskText:
+            'As fontes externas estão indisponíveis agora. O cálculo segue com dados preparados para manter a leitura do risco.',
+        },
+      };
       const WORKSPACE_STEPS = ['A', 'B', 'C'];
       const AREA_FORM_FIELDS = {
         name: {
@@ -179,6 +209,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
       let mapLoadingTimer = null;
       let riskLoadingTimer = null;
       let dataSourceMode = loadDataSourceMode();
+      let themeMode = loadThemeMode();
       let isPrivateAreaDenied = false;
 
       function getWorkspaceStepIndex(step) {
@@ -239,6 +270,52 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         return DATA_SOURCE_MODES.LIVE;
       }
 
+      function loadThemeMode() {
+        const raw = sessionStorage.getItem(THEME_STORAGE_KEY);
+        if (raw === THEME_MODES.LIGHT) {
+          return THEME_MODES.LIGHT;
+        }
+
+        return THEME_MODES.DARK;
+      }
+
+      function saveThemeMode(mode) {
+        sessionStorage.setItem(THEME_STORAGE_KEY, mode);
+      }
+
+      function applyThemeMode(mode) {
+        const nextMode = mode === THEME_MODES.LIGHT ? THEME_MODES.LIGHT : THEME_MODES.DARK;
+        const isLight = nextMode === THEME_MODES.LIGHT;
+        const body = document.body;
+        const root = document.documentElement;
+
+        if (body) {
+          body.dataset.theme = nextMode;
+          body.setAttribute('data-theme', nextMode);
+          body.classList.toggle('theme-light', isLight);
+          body.classList.toggle('theme-dark', !isLight);
+        }
+
+        if (root) {
+          root.dataset.theme = nextMode;
+          root.setAttribute('data-theme', nextMode);
+        }
+
+        if (themeToggleButton) {
+          themeToggleButton.textContent = isLight ? 'Ativar modo escuro' : 'Ativar modo claro';
+          themeToggleButton.setAttribute('aria-pressed', String(isLight));
+        }
+
+        return nextMode;
+      }
+
+      function toggleThemeMode() {
+        themeMode =
+          themeMode === THEME_MODES.LIGHT ? THEME_MODES.DARK : THEME_MODES.LIGHT;
+        saveThemeMode(themeMode);
+        applyThemeMode(themeMode);
+      }
+
       function saveDataSourceMode(mode) {
         sessionStorage.setItem(DATA_SOURCE_STORAGE_KEY, mode);
       }
@@ -248,14 +325,12 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
 
         return {
           isFallback,
-          modeLabel: isFallback ? 'FALLBACK ATIVO' : 'CONSULTA PREPARADA',
-          sourceLabel: isFallback ? 'FALHA EXTERNA -> MOCK' : 'MOCK CONTROLADO',
-          bannerTitle: isFallback
-            ? 'Falha externa simulada nas fontes de dados'
-            : 'Fontes externas prontas para consulta',
-          bannerText: isFallback
-            ? 'NASA FIRMS e NASA POWER foram marcadas como indisponiveis. O fluxo segue com fallback local e cenarios mockados coerentes.'
-            : 'O prototipo segue com cenarios mockados controlados, pronto para substituir a origem externa sem quebrar o fluxo.',
+          modeLabel: UI_COPY.fallback.modeLabel,
+          sourceLabel: UI_COPY.fallback.sourceLabel,
+          bannerTitle: UI_COPY.fallback.title,
+          mapText: UI_COPY.fallback.mapText,
+          riskText: UI_COPY.fallback.riskText,
+          toggleLabel: isFallback ? UI_COPY.fallback.returnToDefault : UI_COPY.fallback.usePrepared,
         };
       }
 
@@ -265,17 +340,15 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
 
         mapFallbackBanner.hidden = hidden;
         riskFallbackBanner.hidden = hidden;
-        fallbackToggle.textContent = sourceState.isFallback
-          ? 'Restaurar fontes preparadas'
-          : 'Simular falha externa';
+        fallbackToggle.textContent = sourceState.toggleLabel;
 
         if (sourceState.isFallback) {
           mapFallbackTitle.textContent = sourceState.bannerTitle;
-          mapFallbackText.textContent = sourceState.bannerText;
+          mapFallbackText.textContent = sourceState.mapText;
           mapFallbackSource.textContent = sourceState.sourceLabel;
           mapFallbackMode.textContent = sourceState.modeLabel;
           riskFallbackTitle.textContent = sourceState.bannerTitle;
-          riskFallbackText.textContent = sourceState.bannerText;
+          riskFallbackText.textContent = sourceState.riskText;
           riskFallbackSource.textContent = sourceState.sourceLabel;
           riskFallbackMode.textContent = sourceState.modeLabel;
         }
@@ -284,57 +357,24 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
       }
 
       function showMapLoadingState(area) {
-        mapStatus.textContent = `Consultando mapa de ${area.name}`;
+        mapStatus.textContent = `Mapa em preparacao para ${area.name}.`;
         mapEmpty.hidden = true;
         mapSurface.hidden = true;
         mapLoadingState.hidden = false;
-        mapLoadingTitle.textContent = `Buscando focos de calor em torno de ${area.name}.`;
+        mapLoadingTitle.textContent = `Estamos montando o mapa da area de ${area.name}.`;
         mapLoadingDetail.textContent =
-          `O mapa demonstrativo esta preparando o centro, o raio de ${area.radiusKm} km e a vizinhanca operacional.`;
+          'Em instantes voce vera o centro, o raio e os focos relevantes.';
       }
 
       function showRiskLoadingState(area) {
-        riskStatus.textContent = `Calculando risco de ${area.name}`;
+        riskStatus.textContent = `Resumo de risco em preparacao para ${area.name}.`;
         riskEmptyState.hidden = true;
         riskResult.hidden = true;
         riskLayout.hidden = true;
         riskLoadingState.hidden = false;
-        riskLoadingTitle.textContent = `Consolidando focos, clima e score para ${area.name}.`;
+        riskLoadingTitle.textContent = `Estamos montando o resumo de risco da area de ${area.name}.`;
         riskLoadingDetail.textContent =
-          'O sistema esta calculando a severidade, o alerta e o resumo executivo do cenÃ¡rio.';
-      }
-
-      function showMapLoadingState(area) {
-        const sourceState = getDataSourceState();
-        mapStatus.textContent = sourceState.isFallback
-          ? `Consultando mapa de ${area.name} com fallback local`
-          : `Consultando mapa de ${area.name}`;
-        mapEmpty.hidden = true;
-        mapSurface.hidden = true;
-        mapLoadingState.hidden = false;
-        mapLoadingTitle.textContent = sourceState.isFallback
-          ? `Fonte externa indisponivel. Usando fallback local para ${area.name}.`
-          : `Buscando focos de calor em torno de ${area.name}.`;
-        mapLoadingDetail.textContent = sourceState.isFallback
-          ? `A visualizacao segue operacional com dados mockados do cenario correspondente, sem interromper o mapa de ${area.radiusKm} km.`
-          : `O mapa demonstrativo esta preparando o centro, o raio de ${area.radiusKm} km e a vizinhanca operacional.`;
-      }
-
-      function showRiskLoadingState(area) {
-        const sourceState = getDataSourceState();
-        riskStatus.textContent = sourceState.isFallback
-          ? `Calculando risco de ${area.name} com fallback local`
-          : `Calculando risco de ${area.name}`;
-        riskEmptyState.hidden = true;
-        riskResult.hidden = true;
-        riskLayout.hidden = true;
-        riskLoadingState.hidden = false;
-        riskLoadingTitle.textContent = sourceState.isFallback
-          ? `Fonte externa indisponivel. Consolidando fallback para ${area.name}.`
-          : `Consolidando focos, clima e score para ${area.name}.`;
-        riskLoadingDetail.textContent = sourceState.isFallback
-          ? 'O sistema esta finalizando o cenario mockado correspondente para manter score, alerta e dashboard consistentes.'
-          : 'O sistema esta calculando a severidade, o alerta e o resumo executivo do cenÃ¡rio.';
+          'Em instantes voce vera score, causas e a proxima acao.';
       }
 
       function hideLoadingStates() {
@@ -428,10 +468,42 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         return 'baixo';
       }
 
+      function formatRiskLevelDisplayLabel(level) {
+        if (level === 'CRITICAL') {
+          return 'Crítico';
+        }
+
+        if (level === 'HIGH') {
+          return 'Alto';
+        }
+
+        if (level === 'MODERATE') {
+          return 'Moderado';
+        }
+
+        return 'Baixo';
+      }
+
+      function formatSeverityDisplayLabel(severity) {
+        if (severity === 'DANGER') {
+          return 'Alta';
+        }
+
+        if (severity === 'WARNING') {
+          return 'Elevada';
+        }
+
+        if (severity === 'ATTENTION') {
+          return 'Moderada';
+        }
+
+        return 'Baixa';
+      }
+
       function buildRiskSummary(areaName, factors, level) {
         const factorLabels = factors.slice(0, 2).map((factor) => factor.label.toLowerCase());
         const detail = factorLabels.length ? ` com ${factorLabels.join(' e ')}` : '';
-        return `${areaName} apresenta risco ${formatRiskLevelLabel(level)} nas ultimas 24 horas${detail}.`;
+        return `${areaName} tem risco ${formatRiskLevelLabel(level)} nas ultimas 24 horas${detail}.`;
       }
 
       function buildAlertFromAnalysis(area, analysis, weather) {
@@ -443,14 +515,14 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
             level: analysis.level,
             severity: analysis.severity,
             title: `Sem alerta ativo para ${area.name}`,
-            summary: 'O risco atual ainda nao exige alerta preventivo ativo.',
-            message: 'O score permanece abaixo do gatilho de alerta preventivo.',
+            summary: 'O risco atual ainda nao pede alerta.',
+            message: 'O score segue abaixo do gatilho de alerta.',
             causes: [
-              'Nenhum alerta preventivo foi disparado para o cenÃ¡rio demonstrativo.',
+              'Nenhum alerta foi disparado neste cenário.',
             ],
             actions: [
-              'Continue acompanhando a area monitorada.',
-              'Revise o mapa e o score se houver mudanca no clima ou novos focos.',
+              'Continue acompanhando a area.',
+              'Revise a situacao se novos focos surgirem.',
             ],
           };
         }
@@ -485,10 +557,13 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           severity: analysis.severity,
           title:
             analysis.level === 'CRITICAL'
-              ? `Risco critico de queimada em ${area.name}`
-              : `Risco alto de queimada em ${area.name}`,
+              ? `Alerta crítico em ${area.name}`
+              : `Alerta alto em ${area.name}`,
           summary: analysis.summary,
-          message: analysis.summary,
+          message:
+            analysis.level === 'CRITICAL'
+              ? 'Acompanhe a area agora e reduza atividades de risco.'
+              : 'Mantenha acompanhamento reforcado da area.',
           causes: causeLabels,
           actions,
         };
@@ -536,7 +611,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         dashboardEmptyState.hidden = dashboard.hasActiveAlerts;
         dashboardEmptyState.textContent = dashboard.hasActiveAlerts
           ? 'A visao consolidada esta populada com areas prioritarias, score medio e alertas ativos.'
-          : `Nao ha alertas ativos para ${area.name} neste momento. O dashboard permanece util para acompanhar a area monitorada e o historico recente.`;
+          : `Nenhum alerta ativo para ${area.name}. O resumo fica pronto quando o risco subir.`;
         dashboardPanel.hidden = false;
         dashboardAreasCount.textContent = String(dashboard.monitoredAreasCount);
         dashboardAlertsCount.textContent = String(dashboard.activeAlertsCount);
@@ -545,7 +620,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         dashboardRiskLevels.innerHTML = Object.entries(dashboard.areasByRiskLevel)
           .map(([level, count]) => {
             return `
-              <span class="source-chip">${level}: ${count}</span>
+              <span class="source-chip">${formatRiskLevelDisplayLabel(level)}: ${count}</span>
             `;
           })
           .join('');
@@ -555,7 +630,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
             <div class="priority-item">
               <div>
                 <strong>Nenhuma area prioritaria no momento</strong>
-                <span>O estado vazio confirma que o dashboard permanece util mesmo sem alerta ativo.</span>
+                <span>O dashboard segue pronto para a proxima ocorrencia.</span>
               </div>
             </div>
           `;
@@ -576,8 +651,8 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         }
 
         dashboardExecutiveNote.textContent = dashboard.hasActiveAlerts
-          ? `A area ${area.name} concentra o maior risco demonstrativo e deve ser acompanhada com prioridade operacional.`
-          : `A area ${area.name} permanece em leitura controlada; o dashboard mostra um estado vazio sem alertas ativos.`;
+          ? `A area ${area.name} tem o maior risco e merece acompanhamento prioritario.`
+          : `A area ${area.name} segue controlada sem alertas ativos.`;
 
         return dashboard;
       }
@@ -593,19 +668,20 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           isActive,
           timeLabel,
           headline: alert.title,
-          subhead: `${alert.channel} | ${alert.severity}`,
-          badge: alert.level,
+          subhead: alert.hasAlert ? 'Alerta visual | Alta' : 'Mensagem preparada',
+          badge: formatRiskLevelDisplayLabel(alert.level),
+          emptyState: isActive
+            ? ''
+            : 'Nenhuma notificacao ativa. O preview aparece quando o risco subir.',
           body: isActive
             ? `Area ${area.name}: ${alert.summary}`
-            : `Area ${area.name}: nenhuma notificacao ativa neste momento.`,
+            : 'Nenhuma notificacao ativa. O preview aparece quando o risco subir.',
           actions: isActive
             ? analysis.level === 'CRITICAL'
               ? ['Ver mapa', 'Reforcar vigilancia']
               : ['Abrir alerta', 'Acompanhar area']
             : ['Atualizar status'],
-          context: isActive
-            ? 'Preview mobile alinhado ao alerta preventivo gerado pelo score.'
-            : 'Preview inativo porque o score ainda nao exigiu notificacao.',
+          context: isActive ? 'Prévia da mensagem.' : 'Cadastre uma area para ver a notificacao.',
         };
       }
 
@@ -616,6 +692,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           ? 'Notificacao ativa'
           : 'Sem notificacao ativa';
         notificationEmptyState.hidden = notification.isActive;
+        notificationEmptyState.textContent = notification.emptyState;
         notificationPanel.hidden = !notification.isActive;
         notificationTime.textContent = notification.timeLabel;
         notificationHeadline.textContent = notification.headline;
@@ -641,15 +718,15 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           return alert;
         }
 
-        alertStatusChip.textContent = `Alerta ${formatRiskLevelLabel(alert.level)} ativo`;
+        alertStatusChip.textContent = `Alerta ${formatRiskLevelDisplayLabel(alert.level)} ativo`;
         alertEmptyState.hidden = true;
         alertPanel.hidden = false;
         alertTitle.textContent = alert.title;
         alertSummary.textContent = alert.summary;
-        alertStatus.textContent = alert.status;
-        alertChannel.textContent = alert.channel;
-        alertLevel.textContent = alert.level;
-        alertSeverity.textContent = alert.severity;
+        alertStatus.textContent = 'Ativo';
+        alertChannel.textContent = 'Visual';
+        alertLevel.textContent = formatRiskLevelDisplayLabel(alert.level);
+        alertSeverity.textContent = formatSeverityDisplayLabel(alert.severity);
         alertMessage.textContent = alert.message;
         alertCauses.innerHTML = alert.causes
           .map((cause) => {
@@ -907,7 +984,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
               <span class="legend-swatch nearby" aria-hidden="true"></span>
               <div>
                 <strong>Nenhum foco relevante encontrado</strong>
-                <span>O fluxo demonstrativo continua valido e segue para a leitura do clima.</span>
+                <span>O mapa segue pronto para a proxima area.</span>
               </div>
             </div>
           `;
@@ -937,7 +1014,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
               <span class="legend-swatch nearby" aria-hidden="true"></span>
               <div>
                 <strong>Nenhum foco relevante encontrado</strong>
-                <span>O fluxo demonstrativo permanece funcional e usa o estado vazio do cenÃ¡rio baixo.</span>
+                <span>O score segue com os demais sinais da area.</span>
               </div>
             </div>
           `;
@@ -989,7 +1066,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
             <div class="value">${weather.windSpeedMs.toFixed(1)} m/s</div>
           </div>
           <div class="weather-tile">
-            <div class="label">Fonte</div>
+            <div class="label">Atualização</div>
             <div class="value">${weather.sourceLabel}</div>
           </div>
           <div class="weather-tile">
@@ -1005,20 +1082,20 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         riskResult.hidden = false;
         riskResult.dataset.level = analysis.level;
         riskScoreValue.textContent = String(analysis.score);
-        riskLevelPill.textContent = analysis.level;
+        riskLevelPill.textContent = formatRiskLevelDisplayLabel(analysis.level);
         riskLevelPill.className = `risk-level-pill ${analysis.level.toLowerCase()}`;
-        riskSeverity.textContent = `Severidade: ${analysis.severity}`;
+        riskSeverity.textContent = `Prioridade: ${formatSeverityDisplayLabel(analysis.severity)}`;
         riskScoreSummary.textContent = analysis.summary;
         riskScoreBrief.textContent = analysis.alertTriggered
-          ? 'O cenÃ¡rio ultrapassa o limiar de alerta preventivo e precisa de leitura imediata.'
-          : 'O cenÃ¡rio permanece abaixo do gatilho de alerta preventivo, mas continua explicito no score.';
+          ? 'O score indica que a area pede acao imediata.'
+          : 'O score mostra que a area segue controlada.';
 
         if (analysis.factors.length === 0) {
           riskFactorList.innerHTML = `
             <div class="risk-factor-item">
               <div class="meta">Sem fatores de risco</div>
               <strong>Score em faixa controlada</strong>
-              <span>O cenÃ¡rio de demonstraÃ§Ã£o nao encontrou sinais relevantes para elevar a pontuacao.</span>
+              <span>O cenário nao encontrou sinais relevantes para elevar a pontuacao.</span>
             </div>
           `;
         } else {
@@ -1105,7 +1182,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           signals.push({
             tone: 'info',
             label: 'Sem sinais extremos',
-            detail: 'O cenÃ¡rio baixo mantÃ©m o score em faixa controlada.',
+            detail: 'O cenário baixo mantém o score em faixa controlada.',
           });
         }
 
@@ -1144,29 +1221,30 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
 
       function renderEmptyRiskExperience() {
         hideLoadingStates();
-        riskStatus.textContent = 'Aguardando area cadastrada';
+        riskStatus.textContent = 'Aguardando area salva';
         riskEmptyState.hidden = false;
+        riskEmptyState.textContent = 'Cadastre uma area para ver focos e clima.';
         riskResult.hidden = true;
         alertStatusChip.textContent = 'Sem alerta ativo';
         alertEmptyState.textContent =
-          'A area cadastrada ainda nao gerou um alerta ativo. Quando o score atingir um nivel alto, o detalhe exibira causas, resumo e recomendacoes praticas.';
+          'Nenhum alerta ativo no momento. Continue acompanhando a area.';
         alertEmptyState.hidden = false;
         alertPanel.hidden = true;
-        alertTitle.textContent = 'Risco preventivo de queimada';
+        alertTitle.textContent = 'Alerta de risco';
         alertSummary.textContent =
-          'O detalhamento do alerta mostra por que o cenÃ¡rio foi classificado como critico.';
-        alertStatus.textContent = 'ACTIVE';
-        alertChannel.textContent = 'IN_APP';
-        alertLevel.textContent = 'CRITICAL';
-        alertSeverity.textContent = 'DANGER';
+          'O alerta resume por que a area pede atencao.';
+        alertStatus.textContent = 'Ativo';
+        alertChannel.textContent = 'Visual';
+        alertLevel.textContent = 'Crítico';
+        alertSeverity.textContent = 'Alta';
         alertMessage.textContent =
-          'Focos proximos e clima seco elevam fortemente o risco nas ultimas 24 horas.';
+          'Nenhum alerta ativo no momento. Continue acompanhando a area.';
         alertCauses.innerHTML = '';
         alertActions.innerHTML = '';
-        dashboardStatusChip.textContent = 'Aguardando area cadastrada';
+        dashboardStatusChip.textContent = 'Aguardando area salva';
         dashboardEmptyState.hidden = false;
         dashboardEmptyState.textContent =
-          'Cadastre uma area para visualizar as agregacoes do dashboard. O estado vazio mostra que o MVP permanece coerente mesmo sem alertas ativos.';
+          'Nenhum alerta ativo para esta area. O resumo fica pronto quando o risco subir.';
         dashboardPanel.hidden = true;
         dashboardAreasCount.textContent = '0';
         dashboardAlertsCount.textContent = '0';
@@ -1175,28 +1253,30 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         dashboardRiskLevels.innerHTML = '';
         dashboardPriorityList.innerHTML = '';
         dashboardExecutiveNote.textContent =
-          'O dashboard consolida o estado atual da area para apoio a decisao.';
+          'Cadastre uma area para ver os indicadores do dashboard.';
         notificationStatusChip.textContent = 'Sem notificacao ativa';
         notificationEmptyState.hidden = false;
+        notificationEmptyState.textContent =
+          'Nenhuma notificacao ativa. O preview aparece quando o risco subir.';
         notificationPanel.hidden = true;
         notificationTime.textContent = '--:--';
-        notificationHeadline.textContent = 'Risco preventivo de queimada';
-        notificationSubhead.textContent = 'IN_APP | DANGER';
-        notificationBadge.textContent = 'CRITICAL';
+        notificationHeadline.textContent = 'Alerta de risco';
+        notificationSubhead.textContent = 'Alerta visual | Alta';
+        notificationBadge.textContent = 'Crítico';
         notificationBody.textContent =
-          'Focos proximos e clima seco elevam fortemente o risco nas ultimas 24 horas.';
+          'Nenhuma notificacao ativa. O preview aparece quando o risco subir.';
         notificationContext.textContent =
-          'A notificacao segue o mesmo resumo do alerta preventivo e funciona como demonstracao visual, sem envio real.';
+          'Cadastre uma area para ver a notificacao.';
         notificationActions.innerHTML = '';
         riskResult.removeAttribute('data-level');
         riskScoreValue.textContent = '0';
-        riskLevelPill.textContent = 'LOW';
+        riskLevelPill.textContent = 'Baixo';
         riskLevelPill.className = 'risk-level-pill low';
-        riskSeverity.textContent = 'Severidade: INFO';
+        riskSeverity.textContent = 'Prioridade: baixa';
         riskScoreSummary.textContent =
-          'O resultado calculado aparece aqui quando os focos e o clima sao avaliados em conjunto.';
+          'O resultado aparece aqui depois da analise.';
         riskScoreBrief.textContent =
-          'O score sintetiza os principais sinais do cenÃ¡rio e antecipa se o fluxo deve evoluir para alerta preventivo.';
+          'O score mostra se a area continua controlada ou pede atencao.';
         riskLayout.hidden = true;
         riskFireSummary.innerHTML = '';
         riskWeatherGrid.innerHTML = '';
@@ -1237,7 +1317,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         const nearbyCount = fireEvents.length - insideCount;
 
         mapLoadingState.hidden = true;
-        mapStatus.textContent = 'Mapa pronto para leitura operacional';
+        mapStatus.textContent = 'Mapa pronto. Prossiga para o risco.';
         mapEmpty.hidden = true;
         mapSurface.hidden = false;
         mapCenterLabel.textContent = area.name;
@@ -1246,7 +1326,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         renderLegend();
         renderFireSummary(fireEvents);
         renderFireMarkers(fireEvents, operationalRadiusKm);
-        areaStatus.textContent = `Area cadastrada e pronta para o mapa (${insideCount} dentro / ${nearbyCount} proximos)`;
+        areaStatus.textContent = `Area salva. Mapa pronto (${insideCount} dentro / ${nearbyCount} proximos)`;
 
         showRiskLoadingState(area);
         riskLoadingTimer = window.setTimeout(() => {
@@ -1277,7 +1357,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         loginError.textContent = '';
         currentUser.textContent = `${session.user.name} (${session.user.email})`;
         currentPermissions.textContent = formatPermissions(session.permissions);
-        currentToken.textContent = session.session.accessToken;
+        currentToken.textContent = 'Sessão ativa';
         currentExpiry.textContent = new Date(session.session.expiresAt).toLocaleString('pt-BR');
         renderPermissionDeniedState(loadArea());
         renderLegend();
@@ -1355,10 +1435,9 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
 
       function renderArea(area) {
         renderPermissionDeniedState(area);
-        areaStatus.textContent = 'Area cadastrada e pronta para o mapa';
+        areaStatus.textContent = 'Area salva. Mapa liberado.';
         areaSuccess.style.display = 'block';
-        areaSuccess.textContent =
-          'Area cadastrada com sucesso. O fluxo agora pode seguir para mapa, focos e calculo de risco.';
+        areaSuccess.textContent = 'Area salva. Prossiga para o mapa e o risco.';
         areaEmptyState.hidden = true;
         areaSummaryGrid.hidden = false;
         summaryName.textContent = area.name;
@@ -1384,18 +1463,16 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           setWorkspaceStep('A');
           renderPermissionDeniedState(null);
           renderDefaultMapEmptyState();
-          areaStatus.textContent = 'Sem area cadastrada';
+          areaStatus.textContent = 'Nenhuma area salva';
           areaSuccess.style.display = 'none';
           areaEmptyState.hidden = false;
-          areaEmptyState.textContent =
-            'Nenhuma area foi cadastrada ainda. Use o formulario acima para iniciar o fluxo.';
+          areaEmptyState.textContent = 'Cadastre uma area para continuar.';
           areaSummaryGrid.hidden = true;
-          mapStatus.textContent = 'Aguardando area cadastrada';
-        mapEmpty.hidden = false;
-        mapSurface.hidden = true;
+          mapStatus.textContent = 'Aguardando area salva';
+          mapEmpty.hidden = false;
+          mapSurface.hidden = true;
           mapCenterLabel.textContent = '--';
-          mapContextText.textContent =
-            'Cadastrar uma area libera o contexto espacial e a leitura do raio operacional.';
+          mapContextText.textContent = 'Cadastre uma area para liberar o mapa.';
           mapFireSummary.innerHTML = '';
           mapFireMarkers.innerHTML = '';
           renderEmptyRiskExperience();
@@ -1412,17 +1489,15 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         areaForm.reset();
         clearAreaErrors();
         areaSuccess.style.display = 'none';
-        areaStatus.textContent = 'Sem area cadastrada';
+        areaStatus.textContent = 'Nenhuma area salva';
         areaEmptyState.hidden = false;
-        areaEmptyState.textContent =
-          'Nenhuma area foi cadastrada ainda. Use o formulario acima para iniciar o fluxo.';
+        areaEmptyState.textContent = 'Cadastre uma area para continuar.';
         areaSummaryGrid.hidden = true;
-        mapStatus.textContent = 'Aguardando area cadastrada';
+        mapStatus.textContent = 'Aguardando area salva';
         mapEmpty.hidden = false;
         mapSurface.hidden = true;
         mapCenterLabel.textContent = '--';
-        mapContextText.textContent =
-          'Cadastrar uma area libera o contexto espacial e a leitura do raio operacional.';
+        mapContextText.textContent = 'Cadastre uma area para liberar o mapa.';
         mapFireSummary.innerHTML = '';
         mapFireMarkers.innerHTML = '';
         renderEmptyRiskExperience();
@@ -1439,20 +1514,20 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
 
         mapLoadingState.hidden = true;
         mapStatus.textContent = sourceState.isFallback
-          ? 'Mapa pronto com fallback local'
-          : 'Mapa pronto para leitura operacional';
+          ? 'Mapa pronto com dados preparados'
+          : 'Mapa pronto. Prossiga para o risco.';
         mapEmpty.hidden = true;
         mapSurface.hidden = false;
         mapCenterLabel.textContent = area.name;
         mapContextText.textContent = sourceState.isFallback
-          ? `${area.name} em ${area.latitude.toFixed(6)}, ${area.longitude.toFixed(6)}. As fontes externas estao indisponiveis e o mapa usa fallback local com raio monitorado de ${area.radiusKm} km e vizinhanca operacional de ${operationalRadiusKm} km.`
+          ? `${area.name} em ${area.latitude.toFixed(6)}, ${area.longitude.toFixed(6)}. O mapa continua com dados preparados e raio monitorado de ${area.radiusKm} km, com vizinhança operacional de ${operationalRadiusKm} km.`
           : `${area.name} em ${area.latitude.toFixed(6)}, ${area.longitude.toFixed(6)}. Raio monitorado de ${area.radiusKm} km com vizinhanca operacional de ${operationalRadiusKm} km.`;
         renderLegend();
         renderFireSummary(fireEvents);
         renderFireMarkers(fireEvents, operationalRadiusKm);
         areaStatus.textContent = sourceState.isFallback
-          ? `Area cadastrada com fallback local (${insideCount} dentro / ${nearbyCount} proximos)`
-          : `Area cadastrada e pronta para o mapa (${insideCount} dentro / ${nearbyCount} proximos)`;
+          ? `Área salva com dados preparados (${insideCount} dentro / ${nearbyCount} próximos)`
+          : `Area salva. Mapa pronto (${insideCount} dentro / ${nearbyCount} proximos)`;
 
         showRiskLoadingState(area);
         riskLoadingTimer = window.setTimeout(() => {
@@ -1467,11 +1542,11 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         const weather = createDemoWeatherSnapshot(area);
         const operationalRadiusKm = Number(area.radiusKm) + 5;
         weather.sourceLabel = sourceState.isFallback
-          ? `${weather.sourceLabel} | fallback local`
-          : `${weather.sourceLabel} | mock controlado`;
+          ? UI_COPY.fallback.sourceLabel
+          : 'Dados preparados';
         riskSourceChip.textContent = sourceState.isFallback
-          ? 'Fonte: fallback local'
-          : 'Fonte: mock controlado';
+          ? UI_COPY.fallback.sourceLabel
+          : 'Dados preparados';
 
         const analysis = renderRiskResult(area, fireEvents, weather);
         const alert = renderAlertDetail(area, analysis, weather);
@@ -1491,29 +1566,30 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         const sourceState = renderDataSourceFallbackState();
         hideLoadingStates();
         renderPermissionDeniedState(null);
-        riskStatus.textContent = 'Aguardando area cadastrada';
+        riskStatus.textContent = 'Aguardando area salva';
         riskEmptyState.hidden = false;
+        riskEmptyState.textContent = 'Cadastre uma area para ver focos e clima.';
         riskResult.hidden = true;
         alertStatusChip.textContent = 'Sem alerta ativo';
         alertEmptyState.textContent =
-          'A area cadastrada ainda nao gerou um alerta ativo. Quando o score atingir um nivel alto, o detalhe exibira causas, resumo e recomendacoes praticas.';
+          'Nenhum alerta ativo no momento. Continue acompanhando a area.';
         alertEmptyState.hidden = false;
         alertPanel.hidden = true;
-        alertTitle.textContent = 'Risco preventivo de queimada';
+        alertTitle.textContent = 'Alerta de risco';
         alertSummary.textContent =
-          'O detalhamento do alerta mostra por que o cenÃ¡rio foi classificado como critico.';
-        alertStatus.textContent = 'ACTIVE';
-        alertChannel.textContent = 'IN_APP';
-        alertLevel.textContent = 'CRITICAL';
-        alertSeverity.textContent = 'DANGER';
+          'O alerta resume por que a area pede atencao.';
+        alertStatus.textContent = 'Ativo';
+        alertChannel.textContent = 'Visual';
+        alertLevel.textContent = 'Crítico';
+        alertSeverity.textContent = 'Alta';
         alertMessage.textContent =
-          'Focos proximos e clima seco elevam fortemente o risco nas ultimas 24 horas.';
+          'Nenhuma notificacao ativa. O preview aparece quando o risco subir.';
         alertCauses.innerHTML = '';
         alertActions.innerHTML = '';
-        dashboardStatusChip.textContent = 'Aguardando area cadastrada';
+        dashboardStatusChip.textContent = 'Aguardando area salva';
         dashboardEmptyState.hidden = false;
         dashboardEmptyState.textContent =
-          'Cadastre uma area para visualizar as agregacoes do dashboard. O estado vazio mostra que o MVP permanece coerente mesmo sem alertas ativos.';
+          'Nenhum alerta ativo para esta area. O resumo fica pronto quando o risco subir.';
         dashboardPanel.hidden = true;
         dashboardAreasCount.textContent = '0';
         dashboardAlertsCount.textContent = '0';
@@ -1522,28 +1598,30 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         dashboardRiskLevels.innerHTML = '';
         dashboardPriorityList.innerHTML = '';
         dashboardExecutiveNote.textContent =
-          'O dashboard consolida o estado atual da area para apoio a decisao.';
+          'Cadastre uma area para ver os indicadores do dashboard.';
         notificationStatusChip.textContent = 'Sem notificacao ativa';
         notificationEmptyState.hidden = false;
+        notificationEmptyState.textContent =
+          'Nenhuma notificacao ativa. O preview aparece quando o risco subir.';
         notificationPanel.hidden = true;
         notificationTime.textContent = '--:--';
-        notificationHeadline.textContent = 'Risco preventivo de queimada';
-        notificationSubhead.textContent = 'IN_APP | DANGER';
-        notificationBadge.textContent = 'CRITICAL';
+        notificationHeadline.textContent = 'Alerta de risco';
+        notificationSubhead.textContent = 'Alerta visual | Alta';
+        notificationBadge.textContent = 'Crítico';
         notificationBody.textContent =
-          'Focos proximos e clima seco elevam fortemente o risco nas ultimas 24 horas.';
+          'Nenhuma notificacao ativa. O preview aparece quando o risco subir.';
         notificationContext.textContent =
-          'A notificacao segue o mesmo resumo do alerta preventivo e funciona como demonstracao visual, sem envio real.';
+          'Cadastre uma area para ver a notificacao.';
         notificationActions.innerHTML = '';
         riskResult.removeAttribute('data-level');
         riskScoreValue.textContent = '0';
-        riskLevelPill.textContent = 'LOW';
+        riskLevelPill.textContent = 'Baixo';
         riskLevelPill.className = 'risk-level-pill low';
-        riskSeverity.textContent = 'Severidade: INFO';
+        riskSeverity.textContent = 'Prioridade: baixa';
         riskScoreSummary.textContent =
-          'O resultado calculado aparece aqui quando os focos e o clima sao avaliados em conjunto.';
+          'O resultado aparece aqui depois da analise.';
         riskScoreBrief.textContent =
-          'O score sintetiza os principais sinais do cenÃ¡rio e antecipa se o fluxo deve evoluir para alerta preventivo.';
+          'O score mostra se a area continua controlada ou pede atencao.';
         riskLayout.hidden = true;
         riskFireSummary.innerHTML = '';
         riskWeatherGrid.innerHTML = '';
@@ -1554,8 +1632,8 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         riskFireCount.textContent = '0 focos relevantes';
         riskFireDistance.textContent = 'Distancia indefinida';
         riskSourceChip.textContent = sourceState.isFallback
-          ? 'Fonte: fallback local'
-          : 'Fonte: mock controlado';
+          ? UI_COPY.fallback.sourceLabel
+          : 'Dados preparados';
         mapFallbackBanner.hidden = true;
         riskFallbackBanner.hidden = true;
       }
@@ -1569,21 +1647,20 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         privateAreaToggle.setAttribute('aria-pressed', String(isPrivateAreaDenied));
 
         if (!isPrivateAreaDenied) {
-          permissionDeniedMessage.textContent =
-            'O usuario demo nao tem permissao para visualizar detalhes de areas privadas.';
+          permissionDeniedMessage.textContent = UI_COPY.errors.permissionDenied;
           permissionDeniedChip.textContent = canViewPrivateAreas
-            ? 'Permissao liberada'
-            : '403 demonstrativo';
+            ? 'Permissão liberada'
+            : 'Acesso restrito';
           return;
         }
 
         const areaLabel = area?.name ?? 'Area privada demonstrativa';
         permissionDeniedMessage.textContent = canViewPrivateAreas
-          ? `A sessao atual poderia visualizar ${areaLabel}, mas o bloqueio foi mantido para demonstracao.`
-          : `A sessao demo tentou acessar ${areaLabel}, mas nao possui permissao para ver areas privadas.`;
+          ? UI_COPY.errors.permissionDeniedBlockedWithAccess(areaLabel)
+          : UI_COPY.errors.permissionDeniedBlocked(areaLabel);
         permissionDeniedChip.textContent = canViewPrivateAreas
-          ? 'Permissao simulada'
-          : '403 demonstrativo';
+          ? 'Permissão simulada'
+          : 'Acesso restrito';
       }
 
       function renderPermissionDeniedExperience(area) {
@@ -1605,13 +1682,13 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         mapEmpty.innerHTML = `
           <div>
             <strong>Visualizacao bloqueada</strong>
-            <span>O usuario demo nao tem permissao para abrir detalhes desta area privada. O mapa preserva a privacidade e nao exibe coordenadas, raio ou focos.</span>
+            <span>Esta sessão não tem acesso a esta área privada. O mapa preserva a privacidade e nao exibe coordenadas, raio ou focos.</span>
           </div>
         `;
         mapSurface.hidden = true;
         mapCenterLabel.textContent = '--';
         mapContextText.textContent =
-          `Acesso negado para ${areaLabel}. Solicite permissao para visualizar detalhes espaciais da area privada.`;
+          `Acesso negado para ${areaLabel}. Solicite acesso para ver os detalhes espaciais.`;
         mapFireSummary.innerHTML = '';
         mapFireMarkers.innerHTML = '';
         mapFallbackBanner.hidden = true;
@@ -1619,7 +1696,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         riskStatus.textContent = 'Acesso restrito';
         riskEmptyState.hidden = false;
         riskEmptyState.textContent =
-          'O calculo de risco nao exibe fatores, clima ou focos enquanto a area privada estiver sem autorizacao.';
+          'O cálculo de risco não mostra fatores, clima ou focos enquanto a área privada estiver sem acesso.';
         riskResult.hidden = true;
         riskLayout.hidden = true;
         riskFactorList.innerHTML = '';
@@ -1627,10 +1704,10 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         riskWeatherGrid.innerHTML = '';
         riskSignalList.innerHTML = '';
         riskNarrative.textContent =
-          'A permissao negada bloqueia a leitura operacional sem apagar a area cadastrada no fluxo demonstrativo.';
+          'Solicite acesso para liberar a leitura de risco desta área privada.';
         riskFireCount.textContent = 'Restrito';
         riskFireDistance.textContent = 'Restrito';
-        riskSourceChip.textContent = 'Fonte: acesso restrito';
+        riskSourceChip.textContent = 'Acesso restrito';
         riskFallbackBanner.hidden = true;
 
         alertStatusChip.textContent = 'Acesso restrito';
@@ -1661,8 +1738,8 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
           minute: '2-digit',
         }).format(new Date());
         notificationHeadline.textContent = 'Notificacao restrita';
-        notificationSubhead.textContent = 'IN_APP | ACESSO_RESTRITO';
-        notificationBadge.textContent = '403';
+        notificationSubhead.textContent = 'Alerta visual | Acesso restrito';
+        notificationBadge.textContent = 'Restrito';
         notificationBody.textContent =
           `Area privada: os detalhes do alerta de ${areaLabel} estao ocultos para esta sessao demo.`;
         notificationContext.textContent =
@@ -1675,11 +1752,8 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
       function renderDefaultMapEmptyState() {
         mapEmpty.innerHTML = `
           <div>
-            <strong>Cadastre uma area para visualizar o mapa</strong>
-            <span>
-              O prototipo mostra aqui o centro, o raio monitorado, a vizinhanca
-              operacional e os focos relevantes.
-            </span>
+            <strong>Cadastre uma area para ver o mapa.</strong>
+            <span>O centro, o raio e os focos aparecem aqui.</span>
           </div>
         `;
       }
@@ -1700,9 +1774,8 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
       demoFillButton.addEventListener('click', () => {
         emailInput.value = 'maria@example.com';
         passwordInput.value = 'SenhaSegura123!';
-        emailInput.focus();
         successBanner.style.display = 'block';
-        successBanner.textContent = 'Credenciais demo preenchidas. Clique em "Entrar e continuar".';
+        successBanner.textContent = 'Campos prontos. Agora entre para continuar.';
         loginError.textContent = '';
       });
 
@@ -1713,7 +1786,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         const password = passwordInput.value;
 
         if (email !== 'maria@example.com' || password !== 'SenhaSegura123!') {
-          loginError.textContent = 'Credenciais invalidas. Use a conta demonstrativa do MVP.';
+          loginError.textContent = UI_COPY.errors.loginInvalid;
           successBanner.style.display = 'none';
           return;
         }
@@ -1721,7 +1794,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         const session = createDemoSession();
         saveSession(session);
         successBanner.style.display = 'block';
-        successBanner.textContent = 'Autenticacao demonstrativa concluida. Sessao liberada para o fluxo principal.';
+        successBanner.textContent = 'Acesso confirmado. Prossiga para cadastrar a area.';
         renderApp(session);
       });
 
@@ -1769,10 +1842,9 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
 
         if (errors.length > 0) {
           areaInvalidSummary.classList.add('visible');
-          areaFormError.textContent =
-            'Corrija os campos destacados antes de seguir para o mapa e o calculo.';
+          areaFormError.textContent = UI_COPY.errors.areaForm;
           areaSuccess.style.display = 'none';
-          areaStatus.textContent = 'Cadastro com ajustes pendentes';
+          areaStatus.textContent = 'Revise os campos';
           focusFirstAreaError(errors);
           return;
         }
@@ -1807,13 +1879,12 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         } else {
           renderDefaultMapEmptyState();
           renderEmptyRiskExperience();
-          areaStatus.textContent = 'Sem area cadastrada';
+          areaStatus.textContent = 'Nenhuma area salva';
           areaSuccess.style.display = 'none';
           areaEmptyState.hidden = false;
-          areaEmptyState.textContent =
-            'Nenhuma area foi cadastrada ainda. Use o formulario acima para iniciar o fluxo.';
+          areaEmptyState.textContent = 'Cadastre uma area para continuar.';
           areaSummaryGrid.hidden = true;
-          mapStatus.textContent = 'Aguardando area cadastrada';
+          mapStatus.textContent = 'Aguardando area salva';
           mapEmpty.hidden = false;
           mapSurface.hidden = true;
         }
@@ -1852,6 +1923,10 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
         }
       });
 
+      if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', toggleThemeMode);
+      }
+
       workspaceTabs.forEach((tab) => {
         tab.addEventListener('click', () => {
           setWorkspaceStep(tab.dataset.workspaceStep);
@@ -1877,6 +1952,7 @@ const STORAGE_KEY = 'orbitguard-fire-demo-session';
       }
 
       const existingSession = loadSession();
+      themeMode = applyThemeMode(themeMode);
       if (existingSession) {
         renderApp(existingSession);
       } else {

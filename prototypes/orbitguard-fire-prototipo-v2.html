@@ -1,80 +1,106 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OrbitGuard Fire - Login e cadastro demonstrativo</title>
-    <link rel="stylesheet" href="orbitguard-fire-prototipo-v2.css" />
-  </head>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>OrbitGuard Fire - Acesso ao fluxo</title>
+      <link rel="icon" href="logo/1-logo.png" />
+      <link rel="stylesheet" href="orbitguard-fire-prototipo-v2.css" />
+    </head>
   <body>
     <main class="shell">
       <header class="topbar">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true"></div>
+          <img class="brand-mark" src="logo/1-logo.png" alt="" aria-hidden="true" />
           <div>
             <h1>OrbitGuard Fire</h1>
-            <p>Login demonstrativo para acessar o fluxo principal do MVP</p>
+            <p>Acesso ao fluxo operacional do MVP demonstrativo</p>
           </div>
         </div>
-        <div class="demo-pill">MVP demonstrativo | auth demo + session context</div>
+        <div class="topbar-actions">
+          <div class="demo-pill">Acesso preparado | sessão pronta</div>
+          <button class="button button-secondary theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
+            Ativar modo claro
+          </button>
+        </div>
       </header>
 
       <section class="hero" aria-label="Fluxo de entrada">
         <article class="story">
-          <div>
-            <div class="eyebrow">Entrada e contexto</div>
-            <h2>Transfira a leitura tecnica para uma sessao simples.</h2>
-            <p class="lead">
-              O acesso inicial do OrbitGuard Fire precisa destravar o fluxo principal sem
-              depender de infraestrutura completa. Este prototipo apresenta login demonstrativo,
-              contexto de sessao coerente e uma ponte clara para as proximas etapas do produto.
-            </p>
+          <div class="story-brand">
+            <img
+              class="story-brand-logo"
+              src="logo/3-logo.png"
+              alt="OrbitGuard Fire - apresentação institucional"
+            />
+            <div class="story-brand-copy">
+              <div class="eyebrow">Capa principal</div>
+              <h2>Entre e siga para o monitoramento.</h2>
+              <p class="lead">
+                O acesso libera o cadastro da area, o mapa e os alertas sem ruido tecnico. Esta
+                entrada foi escrita para orientar a leitura do fluxo com passos diretos e sem
+                excesso de explicacao.
+              </p>
+            </div>
+          </div>
+
+          <div class="story-highlights" aria-label="Destaques da capa">
+            <span class="chip">Leitura operacional</span>
+            <span class="chip">Mapa, risco e alerta</span>
+            <span class="chip">Tema claro e escuro</span>
+          </div>
 
             <div class="flow" aria-label="Fluxo resumido">
               <div class="flow-item">
                 <div class="flow-index">1</div>
                 <div>
-                  <strong>Acesse com a conta demo</strong>
-                  <span>Email e senha padrao ja preenchidos para a demonstracao.</span>
+                  <strong>Use o acesso pronto</strong>
+                  <span>Email e senha prontas para iniciar a jornada.</span>
                 </div>
               </div>
               <div class="flow-item">
                 <div class="flow-index">2</div>
                 <div>
-                  <strong>Recupere o contexto da sessao</strong>
-                  <span>Token, permissao e expiracao ficam visiveis para o usuario.</span>
+                  <strong>Confirme a sessão</strong>
+                  <span>A permissão aparece de forma simples para seguir adiante.</span>
                 </div>
               </div>
               <div class="flow-item">
                 <div class="flow-index">3</div>
                 <div>
-                  <strong>Destrave o fluxo principal</strong>
-                  <span>Area, mapa, risco e alertas continuam consistentes com o login.</span>
+                  <strong>Avance para a análise</strong>
+                  <span>A área cadastrada leva ao mapa, ao risco e ao resumo final.</span>
                 </div>
               </div>
             </div>
-          </div>
 
           <div class="insight-grid" aria-label="Resumo do contexto demonstrativo">
             <div class="insight">
-              <div class="label">Usuario demo</div>
+              <div class="label">Conta</div>
               <div class="value">Maria Oliveira</div>
             </div>
             <div class="insight">
-              <div class="label">Provider</div>
-              <div class="value">DEMO</div>
+              <div class="label">Origem</div>
+              <div class="value">Ambiente de teste</div>
             </div>
             <div class="insight">
-              <div class="label">Sessao</div>
-              <div class="value">Bearer token + expiry</div>
+              <div class="label">Status</div>
+              <div class="value">Pronta para avançar</div>
             </div>
           </div>
         </article>
 
         <section class="login-card" id="login-card" aria-labelledby="login-title">
           <div id="login-view">
-            <h3 id="login-title">Entrar na plataforma</h3>
-            <p>Use as credenciais demonstrativas para simular o inicio da jornada.</p>
+            <div class="section-brand section-brand-featured">
+              <img class="section-brand-logo" src="logo/2-logo.png" alt="OrbitGuard Fire" />
+              <div class="section-brand-copy">
+                <div class="eyebrow">OrbitGuard Fire</div>
+                <p>Entrada demonstrativa com a mesma linguagem visual das telas operacionais.</p>
+              </div>
+            </div>
+            <h3 id="login-title">Acessar o fluxo</h3>
+            <p>Use o acesso pronto para seguir para o cadastro da área e o restante da jornada.</p>
 
             <div class="success-banner" id="success-banner" role="status" aria-live="polite"></div>
             <form class="form" id="login-form">
@@ -103,16 +129,16 @@
               </div>
 
               <div class="actions">
-                <button class="button button-primary" type="submit">Entrar e continuar</button>
+                <button class="button button-primary" type="submit">Entrar</button>
                 <button class="button button-secondary" type="button" id="demo-fill">
-                  Preencher acesso demo
+                  Preencher acesso
                 </button>
               </div>
 
-              <div class="helper" aria-label="Credenciais demonstrativas">
-                <span class="chip">demo email: maria@example.com</span>
-                <span class="chip">demo senha: SenhaSegura123!</span>
-                <span class="chip">auth mode: DEMO</span>
+              <div class="helper" aria-label="Credenciais de acesso">
+                <span class="chip">acesso pronto: maria@example.com</span>
+                <span class="chip">senha pronta: SenhaSegura123!</span>
+                <span class="chip">sessão preparada</span>
               </div>
 
               <div class="error" id="login-error" aria-live="polite"></div>
@@ -123,7 +149,7 @@
             <div class="logout-row">
               <div>
                 <h3>Entrada confirmada</h3>
-                <p>O fluxo principal agora reconhece a sessao demonstrativa ativa.</p>
+                <p>O fluxo principal reconhece o acesso pronto e libera a jornada.</p>
               </div>
               <button class="button button-secondary" type="button" id="logout-button">Sair</button>
             </div>
@@ -164,8 +190,8 @@
                     <div class="flow-index session-index" aria-hidden="true">A</div>
                     <div>
                       <div class="session-tag">Sessão A</div>
-                      <strong>Cadastro de area monitorada</strong>
-                      <span>Entrada inicial do MVP para registrar a área que será acompanhada.</span>
+                      <strong>Cadastro de area</strong>
+                      <span>Registre a area para seguir para o mapa e o risco.</span>
                     </div>
                   </div>
                   <div class="next-step session-step">
@@ -181,7 +207,7 @@
                     <div>
                       <div class="session-tag">Sessão C</div>
                       <strong>Alerta e dashboard</strong>
-                      <span>Resumo final do fluxo com acionamento preventivo e leitura operacional.</span>
+                      <span>Resumo final do fluxo com leitura operacional.</span>
                     </div>
                   </div>
                 </div>
@@ -197,7 +223,7 @@
                   <div class="value" id="current-permissions"></div>
                 </div>
                 <div class="mini-card">
-                  <div class="label">Access token</div>
+                  <div class="label">Sessão</div>
                   <div class="value token" id="current-token"></div>
                 </div>
                 <div class="mini-card">
@@ -225,32 +251,30 @@
                 <div>
                   <strong>Acesso restrito a area privada</strong>
                   <span id="permission-denied-message">
-                    O usuario demo nao tem permissao para visualizar detalhes de areas privadas.
+                    Esta sessão não tem acesso a áreas privadas.
                   </span>
                 </div>
                 <div class="permission-denied-actions">
-                  <span class="alert-chip" id="permission-denied-chip">403 demonstrativo</span>
+                  <span class="alert-chip" id="permission-denied-chip">Acesso restrito</span>
                 </div>
               </div>
 
               <section class="area-card" data-session-step="A" aria-labelledby="area-form-title">
                 <div class="area-card-head">
                   <div>
-                    <h3 id="area-form-title">Cadastro de area monitorada</h3>
+                    <h3 id="area-form-title">Cadastro de area</h3>
                     <p>
-                      Registre uma area para habilitar a leitura espacial do MVP. Os campos
-                      abaixo seguem as regras do contrato e bloqueiam dados invalidos.
+                      Preencha os dados para salvar a area e continuar para o mapa.
                     </p>
                   </div>
-                  <div class="area-status" id="area-status">Sem area cadastrada</div>
+                  <div class="area-status" id="area-status">Nenhuma area salva</div>
                 </div>
 
                 <div class="success-banner" id="area-success" role="status" aria-live="polite"></div>
                 <form class="form-card" id="area-form" novalidate>
                   <div class="invalid-summary" id="area-invalid-summary" role="alert" aria-live="assertive">
-                    <strong>Dados invalidos no cadastro</strong>
-                    Revise os campos destacados. A area so pode seguir para o mapa quando nome, tipo,
-                    coordenadas e raio estiverem dentro das regras do MVP.
+                    <strong>Revise os campos</strong>
+                    Revise os campos destacados antes de continuar.
                   </div>
 
                   <div class="field">
@@ -269,7 +293,7 @@
                   <div class="field">
                     <label for="area-type">Tipo de area</label>
                     <select id="area-type" name="type" aria-describedby="area-type-error">
-                      <option value="">Selecione um tipo de area</option>
+                      <option value="">Selecione o tipo</option>
                       <option value="RURAL_PROPERTY">Propriedade rural</option>
                       <option value="RURAL_COMMUNITY">Comunidade rural</option>
                       <option value="SCHOOL">Escola rural</option>
@@ -327,15 +351,16 @@
                   </div>
 
                   <div class="actions">
-                    <button class="button button-primary" type="submit">Salvar area e seguir</button>
+                    <button class="button button-primary" type="submit">Salvar e continuar</button>
                     <button class="button button-secondary" type="button" id="area-reset">
-                      Limpar campos
+                      Limpar
                     </button>
                   </div>
 
-                  <div class="helper" aria-label="Regras de cadastro da area">
+                  <div class="helper" aria-label="Limites do formulario">
                     <span class="chip">nome: 3 a 80 caracteres</span>
-                    <span class="chip">coordenadas: -90/90 e -180/180</span>
+                    <span class="chip">latitude: -90 a 90</span>
+                    <span class="chip">longitude: -180 a 180</span>
                     <span class="chip">raio: 0.1 km a 50 km</span>
                   </div>
 
@@ -346,12 +371,12 @@
               <section class="area-summary" data-session-step="A" aria-labelledby="area-summary-title">
                 <div class="logout-row">
                   <div>
-                    <h3 id="area-summary-title">Area cadastrada</h3>
-                    <p>O resumo abaixo confirma que a entrada valida e avanca para o resto do fluxo.</p>
+                    <h3 id="area-summary-title">Area salva</h3>
+                    <p>Os dados principais ficam aqui quando a area for salva.</p>
                   </div>
                 </div>
                 <div id="area-empty-state" class="area-summary-empty">
-                  Nenhuma area foi cadastrada ainda. Use o formulario acima para iniciar o fluxo.
+                  Cadastre uma area para continuar.
                 </div>
                 <div class="area-summary-grid" id="area-summary-grid" hidden>
                   <div class="mini-card">
@@ -378,29 +403,25 @@
                   <div>
                     <h3 id="risk-map-title">Mapa de risco</h3>
                     <p>
-                      Area monitorada, raio operacional e focos proximos sao exibidos com legenda
-                      para leitura espacial rapida.
+                      Area, raio e focos aparecem juntos para uma leitura rapida.
                     </p>
                   </div>
-                  <div class="area-status" id="map-status">Aguardando area cadastrada</div>
+                  <div class="area-status" id="map-status">Aguardando area salva</div>
                 </div>
 
                 <div class="map-layout">
                   <div class="map-stage" aria-label="Mapa demonstrativo do risco">
                     <div class="map-empty" id="map-empty">
                       <div>
-                        <strong>Cadastre uma area para visualizar o mapa</strong>
-                        <span>
-                          O prototipo mostra aqui o centro, o raio monitorado, a vizinhanca
-                          operacional e os focos relevantes.
-                        </span>
+                        <strong>Cadastre uma area para ver o mapa.</strong>
+                        <span>O centro, o raio e os focos aparecem aqui.</span>
                       </div>
                     </div>
 
                     <div class="loading-state loading-overlay" id="map-loading-state" hidden aria-live="polite" aria-busy="true">
-                      <div class="loading-badge">Consultando area monitorada</div>
-                      <div class="loading-title" id="map-loading-title">
-                        Buscando focos de calor e contexto espacial no raio operacional.
+                    <div class="loading-badge">Montando o mapa</div>
+                    <div class="loading-title" id="map-loading-title">
+                        Estamos montando o mapa da area.
                       </div>
                       <div class="loading-dots" aria-hidden="true">
                         <span></span>
@@ -413,7 +434,7 @@
                         <div class="loading-skeleton-line short"></div>
                       </div>
                       <div class="loading-detail" id="map-loading-detail">
-                        O mapa demonstrativo aparece em seguida com area, raio e focos relevantes.
+                        Em instantes voce vera o centro, o raio e os focos relevantes.
                       </div>
                     </div>
 
@@ -430,24 +451,28 @@
                   </div>
 
                   <div class="map-sidebar">
+                    <div class="map-brand">
+                      <div class="eyebrow">OrbitGuard Fire</div>
+                      <p>Apoio visual discreto para a leitura espacial.</p>
+                    </div>
                     <div class="fallback-banner compact" id="map-fallback-banner" hidden>
                       <div>
-                        <strong id="map-fallback-title">Falha externa simulada no mapa</strong>
+                        <strong id="map-fallback-title">Dados preparados em uso</strong>
                         <span id="map-fallback-text">
-                          As consultas externas foram marcadas como indisponiveis. O mapa continua
-                          com dados mockados coerentes para manter a demo operacional.
+                          As fontes externas estão indisponíveis agora. O mapa segue com dados
+                          preparados para manter a leitura da área.
                         </span>
                       </div>
                       <div class="fallback-banner-meta">
-                        <span class="source-chip" id="map-fallback-source">MOCK</span>
-                        <span class="source-chip" id="map-fallback-mode">FALLBACK ATIVO</span>
+                        <span class="source-chip" id="map-fallback-source">Dados preparados</span>
+                        <span class="source-chip" id="map-fallback-mode">Consulta mantida</span>
                       </div>
                     </div>
 
                     <div class="mini-card map-context">
                       <div class="label">Contexto espacial</div>
                       <div class="value" id="map-context-text">
-                        Cadastrar uma area libera o contexto espacial e a leitura do raio operacional.
+                        Cadastre uma area para liberar o mapa.
                       </div>
                     </div>
 
@@ -469,41 +494,39 @@
                   <div>
                     <h3 id="risk-calculation-title">Experiencia de calculo</h3>
                     <p>
-                      Os focos de calor e o snapshot climatico aparecem juntos para deixar
-                      explicito o que alimenta o score do MVP.
+                      Focos e clima aparecem juntos para mostrar o que pesa no score.
                     </p>
                   </div>
                   <div class="header-actions">
                     <button class="button button-secondary button-fallback" type="button" id="fallback-toggle">
-                      Simular falha externa
+                      Usar dados preparados
                     </button>
-                    <div class="status-chip" id="risk-status">Aguardando area cadastrada</div>
+                    <div class="status-chip" id="risk-status">Aguardando area salva</div>
                   </div>
                 </div>
 
                 <div class="risk-empty" id="risk-empty-state">
-                  Cadastre uma area para ver os focos de calor e o clima usados no calculo de
-                  risco.
+                  Cadastre uma area para ver focos e clima.
                 </div>
 
                 <div class="fallback-banner" id="risk-fallback-banner" hidden>
                   <div>
-                    <strong id="risk-fallback-title">Falha externa simulada no calculo</strong>
+                    <strong id="risk-fallback-title">Dados preparados em uso</strong>
                     <span id="risk-fallback-text">
-                      NASA FIRMS e NASA POWER estao indisponiveis neste cenario. O MVP continua
-                      com fallback local e preserva o score demonstrativo sem interromper o fluxo.
+                      As fontes externas estão indisponíveis agora. O cálculo segue com dados
+                      preparados para manter a leitura do risco.
                     </span>
                   </div>
                   <div class="fallback-banner-meta">
-                    <span class="source-chip" id="risk-fallback-source">MOCK</span>
-                    <span class="source-chip" id="risk-fallback-mode">FALLBACK ATIVO</span>
+                    <span class="source-chip" id="risk-fallback-source">Dados preparados</span>
+                    <span class="source-chip" id="risk-fallback-mode">Consulta mantida</span>
                   </div>
                 </div>
 
                 <div class="loading-state risk-loading" id="risk-loading-state" hidden aria-live="polite" aria-busy="true">
-                  <div class="loading-badge">Calculando risco preventivo</div>
+                  <div class="loading-badge">Montando o resumo de risco</div>
                   <div class="loading-title" id="risk-loading-title">
-                    Consolidando focos, clima e fatores explicaveis para montar o score.
+                    Estamos montando o resumo de risco da area.
                   </div>
                   <div class="loading-dots" aria-hidden="true">
                     <span></span>
@@ -516,7 +539,7 @@
                     <div class="loading-skeleton-line short"></div>
                   </div>
                   <div class="loading-detail" id="risk-loading-detail">
-                    O resultado final vai aparecer com score, fatores, alerta e dashboard.
+                    Em instantes voce vera score, causas e a proxima acao.
                   </div>
                 </div>
 
@@ -529,21 +552,19 @@
                           <span id="risk-score-value">0</span><span class="risk-score-max">/100</span>
                         </div>
                         <div class="risk-score-meta">
-                          <span class="risk-level-pill low" id="risk-level-pill">LOW</span>
-                          <span class="risk-severity" id="risk-severity">Severidade: INFO</span>
+                          <span class="risk-level-pill low" id="risk-level-pill">Baixo</span>
+                          <span class="risk-severity" id="risk-severity">Prioridade: baixa</span>
                         </div>
                       </div>
                       <div class="risk-score-summary" id="risk-score-summary">
-                        O resultado calculado aparece aqui quando os focos e o clima sao avaliados
-                        em conjunto.
+                        O resultado aparece aqui depois da analise.
                       </div>
                     </div>
 
                     <div class="risk-brief-panel">
                       <div class="label">Leitura imediata</div>
                       <div class="value" id="risk-score-brief">
-                        O score sintetiza os principais sinais do cenÃƒÂ¡rio e antecipa se o fluxo
-                        deve evoluir para alerta preventivo.
+                        O score mostra se a area continua controlada ou pede atencao.
                       </div>
                     </div>
                   </div>
@@ -560,11 +581,10 @@
                       <div class="label">Focos considerados</div>
                       <div class="risk-summary">
                         <div class="value">
-                          Janela demonstrativa de 24h, alinhada ao contrato
-                          <code>/monitored-areas/{id}/fire-events</code>.
+                          Janela de 24h para a area monitorada.
                         </div>
                         <div class="risk-source-note">
-                          <span class="source-chip" id="risk-source-chip">Fonte: MOCK/FALLBACK</span>
+                          <span class="source-chip" id="risk-source-chip">Dados preparados</span>
                           <span class="source-chip" id="risk-fire-count">0 focos relevantes</span>
                           <span class="source-chip" id="risk-fire-distance">Distancia indefinida</span>
                         </div>
@@ -587,8 +607,7 @@
                     <div class="mini-card">
                       <div class="label">Leitura do calculo</div>
                       <div class="value" id="risk-narrative">
-                        Os insumos aparecem antes do resultado para reforcar a explicabilidade do
-                        risco demonstrativo.
+                        Os insumos aparecem antes do resultado para deixar a leitura clara.
                       </div>
                     </div>
                   </div>
@@ -598,41 +617,42 @@
               <section class="alert-card" data-session-step="C" aria-labelledby="alert-details-title">
                 <div class="logout-row">
                   <div>
-                    <h3 id="alert-details-title">Detalhe do alerta preventivo</h3>
+                    <div class="section-brand">
+                      <div class="eyebrow">OrbitGuard Fire</div>
+                      <p>Alerta preventivo com leitura direta e foco na próxima ação.</p>
+                    </div>
+                    <h3 id="alert-details-title">Detalhe do alerta</h3>
                     <p>
-                      O alerta traduz o resultado do risco em linguagem acionavel e preserva o
-                      mesmo contexto do score.
+                      O alerta resume o risco e mostra a proxima acao.
                     </p>
                   </div>
                   <div class="status-chip" id="alert-status-chip">Sem alerta ativo</div>
                 </div>
 
                 <div class="alert-empty" id="alert-empty-state">
-                  A area cadastrada ainda nao gerou um alerta ativo. Quando o score atingir um
-                  nivel alto, o detalhe exibira causas, resumo e recomendacoes praticas.
+                  Nenhum alerta ativo no momento. Continue acompanhando a area.
                 </div>
 
                 <div class="alert-panel" id="alert-panel" hidden>
                   <div class="alert-panel-header">
                     <div class="alert-title">
-                      <strong id="alert-title">Risco preventivo de queimada</strong>
+                      <strong id="alert-title">Alerta de risco</strong>
                       <span id="alert-summary">
-                        O detalhamento do alerta mostra por que o cenÃƒÂ¡rio foi classificado como
-                        critico.
+                        O alerta resume por que a area pede atencao.
                       </span>
                     </div>
                     <div class="alert-meta">
-                      <span class="alert-chip active" id="alert-status">ACTIVE</span>
-                      <span class="alert-chip in-app" id="alert-channel">IN_APP</span>
-                      <span class="alert-chip" id="alert-level">CRITICAL</span>
-                      <span class="alert-chip" id="alert-severity">DANGER</span>
+                      <span class="alert-chip active" id="alert-status">Ativo</span>
+                      <span class="alert-chip in-app" id="alert-channel">Visual</span>
+                      <span class="alert-chip" id="alert-level">Crítico</span>
+                      <span class="alert-chip" id="alert-severity">Alta</span>
                     </div>
                   </div>
 
                   <div class="alert-message">
                     <div class="label">Mensagem do alerta</div>
                     <div class="value" id="alert-message">
-                      Focos proximos e clima seco elevam fortemente o risco nas ultimas 24 horas.
+                      Nenhum alerta ativo no momento. Continue acompanhando a area.
                     </div>
                   </div>
 
@@ -653,18 +673,20 @@
               <section class="dashboard-card" data-session-step="C" aria-labelledby="dashboard-title">
                 <div class="logout-row">
                   <div>
+                    <div class="section-brand">
+                      <div class="eyebrow">OrbitGuard Fire</div>
+                      <p>Painel gerencial com leitura consistente da mesma marca.</p>
+                    </div>
                     <h3 id="dashboard-title">Dashboard gerencial</h3>
                     <p>
-                      A visao consolidada resume areas, alertas, focos recentes e nivel de risco
-                      para leitura operacional rapida.
+                      A visao consolidada resume areas, alertas e focos recentes.
                     </p>
                   </div>
-                  <div class="status-chip" id="dashboard-status-chip">Aguardando area cadastrada</div>
+                  <div class="status-chip" id="dashboard-status-chip">Aguardando area salva</div>
                 </div>
 
                 <div class="dashboard-empty" id="dashboard-empty-state">
-                  Cadastre uma area para visualizar as agregacoes do dashboard. O estado vazio
-                  mostra que o MVP permanece coerente mesmo sem alertas ativos.
+                  Nenhum alerta ativo para esta area. O resumo fica pronto quando o risco subir.
                 </div>
 
                 <div id="dashboard-panel" hidden>
@@ -672,22 +694,22 @@
                     <div class="metric-card">
                       <div class="label">Areas monitoradas</div>
                       <div class="value" id="dashboard-areas-count">0</div>
-                      <div class="note">Contagem de areas disponiveis para a sessao demonstrativa.</div>
+                      <div class="note">Areas ativas na demo.</div>
                     </div>
                     <div class="metric-card">
                       <div class="label">Alertas ativos</div>
                       <div class="value" id="dashboard-alerts-count">0</div>
-                      <div class="note">Mostra se existe acompanhamento em tempo de demonstracao.</div>
+                      <div class="note">Alertas em andamento.</div>
                     </div>
                     <div class="metric-card">
                       <div class="label">Score medio</div>
                       <div class="value" id="dashboard-average-score">0</div>
-                      <div class="note">Media do score calculado para a area atual.</div>
+                      <div class="note">Media da area atual.</div>
                     </div>
                     <div class="metric-card">
                       <div class="label">Focos recentes</div>
                       <div class="value" id="dashboard-fire-count">0</div>
-                      <div class="note">Quantidade de focos considerados na janela operacional.</div>
+                      <div class="note">Focos considerados.</div>
                     </div>
                   </div>
 
@@ -708,7 +730,7 @@
                       <div class="mini-card">
                         <div class="label">Leitura executiva</div>
                         <div class="value" id="dashboard-executive-note">
-                          O dashboard consolida o estado atual da area para apoio a decisao.
+                          Acompanhe aqui a area atual e os alertas ativos.
                         </div>
                       </div>
                     </div>
@@ -719,18 +741,16 @@
               <section class="notification-card" data-session-step="C" aria-labelledby="notification-title">
                 <div class="logout-row">
                   <div>
-                    <h3 id="notification-title">Demonstracao de notificacao in-app</h3>
+                    <h3 id="notification-title">Demonstracao de notificacao visual</h3>
                     <p>
-                      O preview mobile espelha o contexto do alerta gerado e permanece restrito ao
-                      escopo demonstrativo do MVP.
+                      O preview visual fecha a jornada com a mensagem final.
                     </p>
                   </div>
                   <div class="status-chip" id="notification-status-chip">Sem notificacao ativa</div>
                 </div>
 
                 <div class="notification-empty" id="notification-empty-state">
-                  Nenhuma notificacao ativa no momento. Quando o alerta estiver em nivel alto ou
-                  critico, o preview exibira uma mensagem curta e acionavel.
+                  Nenhuma notificacao ativa. O preview aparece quando o risco subir.
                 </div>
 
                 <div class="notification-layout" id="notification-panel" hidden>
@@ -744,13 +764,13 @@
                       <div class="notification-preview active">
                         <div class="notification-header">
                           <div>
-                            <strong id="notification-headline">Risco critico de queimada</strong>
-                            <span id="notification-subhead">IN_APP | DANGER</span>
+                            <strong id="notification-headline">Alerta de risco</strong>
+                            <span id="notification-subhead">Alerta visual | Alta</span>
                           </div>
-                          <span class="alert-chip active" id="notification-badge">CRITICAL</span>
+                          <span class="alert-chip active" id="notification-badge">Crítico</span>
                         </div>
                         <div class="notification-body" id="notification-body">
-                          Focos proximos e clima seco elevam fortemente o risco nas ultimas 24 horas.
+                          Nenhuma notificacao ativa. O preview aparece quando o risco subir.
                         </div>
                         <div class="notification-actions" id="notification-actions"></div>
                       </div>
@@ -760,8 +780,7 @@
                   <div class="mini-card">
                     <div class="label">Contexto do preview</div>
                     <div class="value" id="notification-context">
-                      A notificacao segue o mesmo resumo do alerta preventivo e funciona como
-                      demonstracao visual, sem envio real.
+                      Prévia da mensagem.
                     </div>
                   </div>
                 </div>
@@ -770,6 +789,9 @@
               <footer class="workspace-footer" aria-label="Navegacao sequencial do fluxo">
                 <div class="workspace-footer-copy">
                   <div class="label">Navegacao sequencial</div>
+                  <div class="workspace-footer-brand" id="workspace-footer-brand">
+                    OrbitGuard Fire | fluxo demonstrativo
+                  </div>
                   <div class="value" id="workspace-footer-status">Sessao A de 3 ativa.</div>
                 </div>
                 <div class="workspace-footer-actions">

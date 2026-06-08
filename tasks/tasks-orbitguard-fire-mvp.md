@@ -449,55 +449,66 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
   - **Criterio de pronto:** fluxo passa com dados disponiveis e com fallback simulado em falha externa.
   - **Evidencia de validacao:** smoke test E2E ampliado em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js` para cobrir o fluxo completo de risco com area autenticada, score `95/100`, nivel `CRITICAL`, alerta, dashboard e notificacao ativos, seguido da simulacao de falha externa via `fallback-toggle` com banners de fallback e manutencao do fluxo demonstrativo. Validacao executada com `node .\\prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js` e `node --check .\\prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js`, ambas sem erros.
 
-- [ ] 10.4 Validar detalhe do alerta preventivo.
+- [x] 10.4 Validar detalhe do alerta preventivo.
   - **Referencias PRD:** CA007.
   - **Criterio de pronto:** alerta exibe fatores e recomendacoes coerentes com o risco calculado.
+  - **Evidencia de validacao:** smoke test E2E atualizado em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js` para validar o detalhe do alerta preventivo com `alert-summary`, `alert-channel`, `alert-level`, `alert-severity`, cinco causas explicitas e tres recomendacoes acionaveis no fluxo `CRITICAL`; validacao executada com `node .\prototypes\orbitguard-fire-prototipo-v2.e2e.test.js`, com saida `orbitguard-fire prototype area flow checks passed`.
 
-- [ ] 10.5 Validar dashboard com e sem alertas ativos.
+- [x] 10.5 Validar dashboard com e sem alertas ativos.
   - **Referencias PRD:** CA008, CA009.
   - **Criterio de pronto:** dashboard cobre estado populado e estado vazio com comunicacao adequada.
+  - **Evidencia de validacao:** smoke test E2E atualizado em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js` para cobrir o dashboard em dois cenarios: estado populado com alerta ativo no fluxo critico (`dashboard-alerts-count = 1`, `dashboard-panel` visivel) e estado vazio sem alertas com area de baixo risco (`dashboard-status-chip = Dashboard sem alertas ativos em Sitio Boa Esperanca`, `dashboard-empty-state` visivel, `dashboard-alerts-count = 0`); validacao executada com `node .\prototypes\orbitguard-fire-prototipo-v2.e2e.test.js` e `node --check .\prototypes\orbitguard-fire-prototipo-v2.e2e.test.js`, ambas sem erros.
 
-- [ ] 10.6 Validar demonstracao da notificacao mobile/in-app.
+- [x] 10.6 Validar demonstracao da notificacao mobile/in-app.
   - **Referencias PRD:** CA010.
   - **Criterio de pronto:** notificacao espelha corretamente o contexto e urgencia do alerta.
+  - **Evidencia de validacao:** smoke test E2E atualizado em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js` para validar o preview mobile ativo com `notification-status-chip = Notificacao ativa`, `notification-headline`, `notification-subhead`, `notification-badge`, `notification-body`, `notification-context`, dois chips de acao e timestamp no formato `HH:MM`, alem do estado vazio com `notification-status-chip = Sem notificacao ativa` e `notification-panel` oculto para area de baixo risco; validacao executada com `node --check prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js` e `node prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js`, ambas sem erros.
 
 ### 11. Testes nao funcionais
 
-- [ ] 11.1 Validar compreensibilidade do score, alerta e recomendacoes.
+- [x] 11.1 Validar compreensibilidade do score, alerta e recomendacoes.
   - **Referencias PRD:** RNF001.
   - **Criterio de pronto:** evidencia manual ou teste guiado confirma clareza minima para usuario nao tecnico.
+  - **Evidencia de validacao:** linguagem do resumo de risco e da mensagem de alerta foi ajustada para pt-BR em `backend/src/risk-engine/risk-engine.service.ts`, `backend/src/alerts/alert-message.ts` e `prototypes/orbitguard-fire-prototipo-v2.js`, substituindo `critical/high/moderate` por `critico/alto/moderado/baixo` nos textos exibidos ao usuario. Validacao executada com `cd backend && npm run check`, `cd backend && node -r ts-node/register test\alert-message.test.ts`, `cd backend && node -r ts-node/register test\risk-engine-alerts.test.ts`, `node --check prototypes\orbitguard-fire-prototipo-v2.e2e.test.js` e `node prototypes\orbitguard-fire-prototipo-v2.e2e.test.js`, todos sem erros.
 
-- [ ] 11.2 Validar resiliencia do fluxo sem dependencia externa obrigatoria.
+- [x] 11.2 Validar resiliencia do fluxo sem dependencia externa obrigatoria.
   - **Referencias PRD:** RNF002, CA005.
   - **Criterio de pronto:** fluxo principal continua operacional usando mocks quando servicos externos falham.
+  - **Evidencia de validacao:** teste de integracao adicionado em `backend/test/resilience.integration.test.ts`, cobrindo falha simulada de coleta de focos via `upsertFireEvent`, falha simulada de clima via `getLatestWeatherSnapshot`, retorno por fallback com `MOCK/FALLBACK`, continuidade do calculo de risco em `CRITICAL`, geracao de alerta e consolidacao do dashboard. Validacao executada com `cd backend && node -r ts-node/register test\\resilience.integration.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
-- [ ] 11.3 Validar tempo de resposta do fluxo demonstrativo.
+- [x] 11.3 Validar tempo de resposta do fluxo demonstrativo.
   - **Referencias PRD:** RNF003.
   - **Criterio de pronto:** operacoes principais ficam dentro da meta definida para demonstracao ou possuem justificativa registrada.
+  - **Evidencia de validacao:** teste automatizado adicionado em `backend/test/demo-flow-response-time.test.ts` medindo o fluxo demonstrativo em memoria com `me`, `getDashboardSummary`, `getMonitoredArea`, `getFireEvents`, `getLatestWeather`, `calculateRisk` e `listAlerts`. Validacao executada com `cd backend && node -r ts-node/register test\\demo-flow-response-time.test.ts`, com saida `demo flow response time checks passed` e media de `58.15ms` (maximo `58.68ms`); `cd backend && npm run check` tambem executado sem erros.
 
-- [ ] 11.4 Validar protecao de dados sensiveis e exposicao minima em logs e payloads.
+- [x] 11.4 Validar protecao de dados sensiveis e exposicao minima em logs e payloads.
   - **Referencias PRD:** RNF004.
   - **Criterio de pronto:** logs, DTOs e respostas publicas nao expõem credenciais ou dados indevidos.
+  - **Evidencia de validacao:** helper `buildStartupLogPayload` adicionado em `backend/src/main.ts` para restringir o log de bootstrap a `status`, `monitoredAreasCount`, `activeAlertsCount` e `averageRiskScore`; teste `backend/test/startup-log-sanitization.test.ts` garante que o payload nao expõe `summary`, `priorityAreas`, `areasByRiskLevel`, `accessToken`, `passwordHash`, `latitude` ou `longitude`. Validacao executada com `cd backend && node -r ts-node/register test\\startup-log-sanitization.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
 ### 12. Observabilidade, logs e metricas
 
-- [ ] 12.1 Implementar logs de inicio, sucesso e falha em coleta mockada, calculo de risco e geracao de alerta.
+- [x] 12.1 Implementar logs de inicio, sucesso e falha em coleta mockada, calculo de risco e geracao de alerta.
   - **Referencias PRD:** RNF005, RNF002.
   - **Criterio de pronto:** operacoes criticas possuem logs rastreaveis sem ruido excessivo.
+  - **Evidencia de validacao:** logger estruturado com sanitizacao adicionado em `backend/src/common/logging/backend-logger.ts` e injetado em `backend/src/fire-events/fire-events.service.ts`, `backend/src/weather/weather.service.ts`, `backend/src/risk-engine/risk-engine.service.ts`, `backend/src/alerts/alerts.service.ts` e `backend/src/app/orbitguard-fire-backend.ts`. Novo teste `backend/test/observability-logs.test.ts` valida logs de inicio, sucesso e falha para coleta mockada, calculo de risco e geracao de alerta, com ausencia de `latitude`, `longitude`, `accessToken` e `passwordHash` nos detalhes. Validacao executada com `cd backend && node -r ts-node/register test\observability-logs.test.ts`, `cd backend && node -r ts-node/register test\resilience.integration.test.ts` e `cd backend && npm run check`, todas sem erros.
 
-- [ ] 12.2 Implementar boas praticas de log para nao expor dados sensiveis de localizacao e autenticacao.
+- [x] 12.2 Implementar boas praticas de log para nao expor dados sensiveis de localizacao e autenticacao.
   - **Referencias PRD:** RNF004, RNF005.
   - **Criterio de pronto:** revisao tecnica confirma que logs nao vazam coordenadas privadas ou credenciais.
+  - **Evidencia de validacao:** `backend/src/common/logging/backend-logger.ts` ampliado com redaction de aliases comuns de coordenadas e segredos (`lat`, `lng`, `lon`, `coordinates`, `coordinate`, `apiKey`, `authorization`, `secret`, `passwordConfirmation`) e coberto por `backend/test/backend-logger-sanitization.test.ts`, que confirma a remocao desses campos inclusive em estruturas aninhadas. Validacao executada com `cd backend && node -r ts-node/register test\\backend-logger-sanitization.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
-- [ ] 12.3 Registrar metricas operacionais minimas para dashboard tecnico ou acompanhamento manual.
+- [x] 12.3 Registrar metricas operacionais minimas para dashboard tecnico ou acompanhamento manual.
   - **Referencias PRD:** metricas de sucesso, RF007.
   - **Criterio de pronto:** existe forma de acompanhar alertas ativos, score medio e falhas de integracao no MVP.
+  - **Evidencia de validacao:** snapshot operacional adicionado em `backend/src/common/metrics/operational-metrics.ts` e exposto por `OrbitGuardFireBackend.getOperationalMetrics()`, consolidando `monitoredAreasCount`, `activeAlertsCount`, `averageRiskScore` e contadores de falha para `startup`, `fire-events`, `weather`, `risk` e `alerts`. Novo teste `backend/test/operational-metrics.test.ts` cobre o estado inicial da demo e a contagem de falhas simuladas por integraÃ§Ã£o. Validacao executada com `cd backend && node -r ts-node/register test\\operational-metrics.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
 ### 13. Documentacao
 
-- [ ] 13.1 Atualizar documentacao funcional e tecnica do MVP.
+- [x] 13.1 Atualizar documentacao funcional e tecnica do MVP.
   - **Tipo:** Documentacao.
   - **Criterio de pronto:** documentacao cobre fluxo principal, mocks, contratos, regras do risco e limitacoes do MVP.
+  - **Evidencia de validacao:** criado o guia funcional e tecnico em `docs/mvp-operational-guide.md` com fluxo principal, mocks e fallback, contratos HTTP, regras do motor de risco e limitacoes atuais; o `README.md` foi atualizado para apontar a documentacao consolidada e refletir o estado atual do MVP demonstrativo. Validacao executada com `git diff --check` e revisao manual do conteudo atualizado.
 
 - [ ] 13.2 Documentar decisoes de escopo e diferencas entre comportamento demonstrativo e evolucao futura.
   - **Referencias PRD:** fora de escopo, riscos, plano de release.
@@ -505,13 +516,15 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
 
 ### 14. CI/CD, ambiente e release
 
-- [ ] 14.1 Configurar ambiente local e pipeline minima para executar frontend, backend e testes do MVP.
+- [x] 14.1 Configurar ambiente local e pipeline minima para executar frontend, backend e testes do MVP.
   - **Tipo:** Release.
   - **Criterio de pronto:** time consegue subir o MVP e rodar a bateria minima de validacao sem passos ocultos.
+  - **Evidencia de validacao:** adicionados o manifesto de pipeline em `scripts/mvp-pipeline.mjs`, o teste de configuracao em `scripts/mvp-pipeline.test.js`, os scripts de topo em `package.json`, a pipeline minima em `.github/workflows/mvp-check.yml` e a secao de execucao local em `README.md`. Validacao executada com `npm run check:mvp:test` e `npm run check`, ambos sem erros; a pipeline raiz executa `npm --prefix backend run check`, `node --check prototypes/orbitguard-fire-prototipo-v2.e2e.test.js` e `node prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`. Observacao: o commit semanticico nao pode ser criado neste sandbox porque o acesso de escrita a `.git` esta indisponivel.
 
-- [ ] 14.2 Validar configuracoes, seeds e mocks necessarios para demonstracao consistente.
+- [x] 14.2 Validar configuracoes, seeds e mocks necessarios para demonstracao consistente.
   - **Referencias PRD:** DEP004, DEP007.
   - **Criterio de pronto:** ambiente de demo sempre inicializa com dados coerentes para o fluxo principal.
+  - **Evidencia de validacao:** teste de consistencia adicionado em `backend/test/demo-seed-consistency.test.ts`, cobrindo o bootstrap demonstrativo via `OrbitGuardFireBackend`, o contexto de sessao demo (`maria@example.com` / `SenhaSegura123!`), as tres areas seedadas (`Fazenda Santa Luzia`, `Cooperativa Esperanca`, `Escola Verde`), os cenarios mockados de focos e clima, os scores `CRITICAL` / `MODERATE` / `LOW` e o dashboard inicial com `3` areas, `1` alerta ativo e score medio `47`. Validacao executada com `cd backend && node -r ts-node/register test\\demo-seed-consistency.test.ts`, `cd backend && npm run check` e `npm run check`, todas sem erros.
 
 - [ ] 14.3 Preparar checklist de demonstracao/release do MVP.
   - **Tipo:** Release.

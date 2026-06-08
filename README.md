@@ -6,6 +6,17 @@ O **OrbitGuard Fire** é uma solução digital para monitoramento preventivo de 
 
 A proposta é transformar dados técnicos de fontes como **NASA FIRMS**, **NASA POWER** e **INPE BDQueimadas** em **alertas simples, mapas de risco, recomendações práticas e dashboards operacionais**.
 
+## 0. Documentação do MVP
+
+O repositório já consolida a documentação funcional e técnica do MVP em um guia principal e nos documentos de refinamento abaixo:
+
+- [`docs/mvp-operational-guide.md`](docs/mvp-operational-guide.md) - fluxo principal, mocks, contratos, regras do risco e limitações atuais.
+- [`docs/mvp-foundation.md`](docs/mvp-foundation.md) - baseline de stack e estrategia de entrega.
+- [`docs/mvp-technical-refinement.md`](docs/mvp-technical-refinement.md) - regras tecnicas consolidadas para area, proximidade, dados simulados e notificacao.
+- [`docs/mvp-data-model.md`](docs/mvp-data-model.md) - modelo de dados e persistencia.
+- [`docs/api-contracts.md`](docs/api-contracts.md) - contratos HTTP e formatos de request/response.
+- [`docs/mvp-scope-alignment.md`](docs/mvp-scope-alignment.md) - escopo fechado e fora de escopo preservados.
+
 ---
 
 ## 1. Visão do Produto
@@ -448,6 +459,27 @@ Depois acesse:
 http://localhost:5500/prototypes/orbitguard-fire-prototipo-v2.html
 ```
 
+### Opção 3 — Usar os scripts raiz do MVP
+
+O repositório expõe comandos de topo para facilitar a execução local e a validação mínima do MVP:
+
+```bash
+npm run check
+npm run check:mvp
+npm run check:mvp:test
+npm run check:backend
+npm run check:prototype
+npm --prefix backend run dev
+```
+
+O comando `npm run check` executa a pipeline mínima do workspace:
+
+1. `npm --prefix backend run check`
+2. `node --check prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`
+3. `node prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`
+
+Para a demonstração do frontend/protótipo, use `npm run demo:prototype` ou abra o HTML diretamente no navegador. Nesta fase, a superfície de frontend do MVP é o protótipo navegável em `prototypes/`.
+
 ---
 
 ## 15. Estrutura Recomendada do Repositório
@@ -640,7 +672,7 @@ Projeto acadêmico desenvolvido para fins educacionais e demonstrativos.
 ## 23. Status do Projeto
 
 ```text
-Status: Protótipo navegável / MVP conceitual
+Status: MVP demonstrativo com protótipo navegável e backend em memória
 Versão: 2.0
 Foco atual: Demonstração do fluxo principal e validação da proposta
 ```

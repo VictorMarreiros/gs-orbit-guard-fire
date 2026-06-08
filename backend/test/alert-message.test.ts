@@ -22,7 +22,7 @@ function runCriticalScenario(): void {
   assert.equal(risk.level, RiskLevel.CRITICAL);
   assert.equal(alert.title, 'Risco critico de queimada');
   assert.equal(alert.recommendedActions[0], 'Reforce a vigilancia local agora.');
-  assert.match(alert.message, /Fazenda Santa Luzia Norte em risco critical/i);
+  assert.match(alert.message, /Fazenda Santa Luzia Norte em risco critico/i);
   assert.match(alert.message, /foco criticamente proximo/i);
   assert.match(alert.message, /cenario exige atencao imediata/i);
 }
@@ -48,7 +48,7 @@ function runModerateScenario(): void {
   const content = buildAlertContent(area.name, risk.level, risk.summary, risk.factors);
   assert.equal(content.title, 'Risco moderado de queimada');
   assert.equal(content.recommendedActions[0], 'Acompanhe a area com mais frequencia ao longo do dia.');
-  assert.match(content.message, /Cooperativa Esperanca Oeste em risco moderate/i);
+  assert.match(content.message, /Cooperativa Esperanca Oeste em risco moderado/i);
   assert.match(content.message, /foco proximo/i);
   assert.match(content.message, /temperatura elevada/i);
   assert.match(content.message, /ausencia de chuva relevante/i);

@@ -150,7 +150,7 @@ function runHighRiskScenario(): void {
   assert.equal(alert.severity, RiskSeverity.WARNING);
   assert.equal(alert.title, 'Risco alto de queimada');
   assert.equal(alert.recommendedActions[0], 'Intensifique o monitoramento da area nas proximas horas.');
-  assert.match(alert.message, /Area Alto Risco em risco high/i);
+  assert.match(alert.message, /Area Alto Risco em risco alto/i);
   assert.match(alert.message, /foco proximo/i);
   assert.match(alert.message, /temperatura elevada/i);
   assert.match(alert.message, /baixa umidade/i);
@@ -190,7 +190,7 @@ function runCriticalRiskScenario(): void {
   assert.equal(alert.severity, RiskSeverity.DANGER);
   assert.equal(alert.title, 'Risco critico de queimada');
   assert.equal(alert.recommendedActions[0], 'Reforce a vigilancia local agora.');
-  assert.match(alert.message, /Area Critica em risco critical/i);
+  assert.match(alert.message, /Area Critica em risco critico/i);
   assert.match(alert.message, /foco criticamente proximo/i);
   assert.match(alert.message, /concentracao recente de focos/i);
   assert.match(alert.message, /temperatura elevada/i);

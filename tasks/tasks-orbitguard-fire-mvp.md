@@ -439,13 +439,15 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
   - **Criterio de pronto:** fluxo de cadastro passa com sucesso e falha controlada para dados invalidos.
   - **Evidencia de validacao:** smoke test E2E em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`, executado com `node prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js`, cobrindo login demonstrativo, cadastro valido de `Fazenda Santa Luzia` com avanço para mapa e resumo espacial, e cadastro invalido com mensagens por campo, destaque visual e foco no primeiro erro. Resultado: `orbitguard-fire prototype area flow checks passed`.
 
-- [ ] 10.2 Validar exibicao da area, raio e focos no mapa.
+- [x] 10.2 Validar exibicao da area, raio e focos no mapa.
   - **Referencias PRD:** CA003.
   - **Criterio de pronto:** evidencia funcional confirma renderizacao correta do contexto espacial.
+  - **Evidencia de validacao:** smoke test E2E atualizado em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js` para verificar o mapa apos o cadastro demonstrativo, cobrindo `map-center-label`, `map-context-text`, legenda de `Centro da area` e `Vizinhanca operacional`, resumo de focos dentro e proximos ao raio e contagem de `4` marcadores no mapa. Validacao executada com `node .\\prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js`, com saida `orbitguard-fire prototype area flow checks passed`.
 
-- [ ] 10.3 Validar fluxo completo de consulta/simulacao e calculo de risco.
+- [x] 10.3 Validar fluxo completo de consulta/simulacao e calculo de risco.
   - **Referencias PRD:** CA004, CA005, CA006.
   - **Criterio de pronto:** fluxo passa com dados disponiveis e com fallback simulado em falha externa.
+  - **Evidencia de validacao:** smoke test E2E ampliado em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js` para cobrir o fluxo completo de risco com area autenticada, score `95/100`, nivel `CRITICAL`, alerta, dashboard e notificacao ativos, seguido da simulacao de falha externa via `fallback-toggle` com banners de fallback e manutencao do fluxo demonstrativo. Validacao executada com `node .\\prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js` e `node --check .\\prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js`, ambas sem erros.
 
 - [ ] 10.4 Validar detalhe do alerta preventivo.
   - **Referencias PRD:** CA007.

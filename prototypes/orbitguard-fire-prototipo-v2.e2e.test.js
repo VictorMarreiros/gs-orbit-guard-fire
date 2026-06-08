@@ -515,6 +515,11 @@ function submitArea(env, area) {
   env.areaForm.dispatchEvent('submit');
 }
 
+function countOccurrences(text, pattern) {
+  const matches = text.match(new RegExp(pattern, 'g'));
+  return matches ? matches.length : 0;
+}
+
 function runSuccessfulAreaFlow() {
   const env = createPrototypeEnvironment();
   loadPrototype(env);
@@ -542,6 +547,18 @@ function runSuccessfulAreaFlow() {
   assert.match(env.elements['area-status'].textContent, /Area cadastrada e pronta para o mapa/i);
   assert.equal(env.elements['map-surface'].hidden, false);
   assert.equal(env.elements['map-status'].textContent, 'Mapa pronto para leitura operacional');
+  assert.equal(env.elements['map-center-label'].textContent, 'Fazenda Santa Luzia');
+  assert.equal(
+    env.elements['map-context-text'].textContent,
+    'Fazenda Santa Luzia em -15.780100, -47.929200. Raio monitorado de 10 km com vizinhanca operacional de 15 km.',
+  );
+  assert.equal(env.elements['map-legend'].innerHTML.includes('Centro da area'), true);
+  assert.equal(env.elements['map-legend'].innerHTML.includes('Vizinhanca operacional'), true);
+  assert.equal(env.elements['map-fire-summary'].innerHTML.includes('Foco 1 Dentro do raio'), true);
+  assert.equal(env.elements['map-fire-summary'].innerHTML.includes('Foco 4 Proximo ao raio'), true);
+  assert.equal(countOccurrences(env.elements['map-fire-markers'].innerHTML, 'class="map-fire-marker"'), 4);
+  assert.equal(countOccurrences(env.elements['map-fire-markers'].innerHTML, 'inside" aria-hidden="true"'), 2);
+  assert.equal(countOccurrences(env.elements['map-fire-markers'].innerHTML, 'nearby" aria-hidden="true"'), 2);
   assert.equal(env.elements['workspace-footer-status'].textContent, 'Sessão 2 de 3 ativa.');
   assert.equal(env.document.activeElement, null);
 }
@@ -573,9 +590,56 @@ function runInvalidAreaFlow() {
   assert.equal(env.elements['area-success'].style.display, 'none');
 }
 
+function runRiskFlowWithFallbackScenario() {
+  const env = createPrototypeEnvironment();
+  loadPrototype(env);
+
+  submitLogin(env, 'maria@example.com', 'SenhaSegura123!');
+  submitArea(env, {
+    name: 'Fazenda Santa Luzia',
+    type: 'RURAL_PROPERTY',
+    latitude: '-15.7801',
+    longitude: '-47.9292',
+    radiusKm: '10',
+  });
+
+  assert.equal(env.elements['risk-result'].hidden, false);
+  assert.equal(env.elements['risk-score-value'].textContent, '95');
+  assert.equal(env.elements['risk-level-pill'].textContent, 'CRITICAL');
+  assert.equal(env.elements['risk-severity'].textContent, 'Severidade: DANGER');
+  assert.equal(env.elements['risk-source-chip'].textContent, 'Fonte: mock controlado');
+  assert.equal(env.elements['risk-factor-list'].innerHTML.includes('NEAR_FIRE_CRITICAL'), true);
+  assert.equal(env.elements['alert-panel'].hidden, false);
+  assert.equal(env.elements['alert-title'].textContent, 'Risco critico de queimada em Fazenda Santa Luzia');
+  assert.equal(env.elements['alert-status'].textContent, 'ACTIVE');
+  assert.equal(env.elements['dashboard-panel'].hidden, false);
+  assert.equal(env.elements['dashboard-alerts-count'].textContent, '1');
+  assert.equal(env.elements['notification-panel'].hidden, false);
+  assert.equal(env.elements['notification-badge'].textContent, 'CRITICAL');
+
+  env.elements['fallback-toggle'].dispatchEvent('click');
+
+  assert.equal(env.elements['map-fallback-banner'].hidden, false);
+  assert.equal(env.elements['risk-fallback-banner'].hidden, false);
+  assert.equal(env.elements['map-fallback-source'].textContent, 'FALHA EXTERNA -> MOCK');
+  assert.equal(env.elements['risk-fallback-source'].textContent, 'FALHA EXTERNA -> MOCK');
+  assert.equal(env.elements['risk-source-chip'].textContent, 'Fonte: fallback local');
+  assert.equal(env.elements['map-status'].textContent, 'Mapa pronto com fallback local');
+  assert.equal(env.elements['risk-status'].textContent, 'Score calculado: 95/100');
+  assert.equal(env.elements['risk-score-value'].textContent, '95');
+  assert.equal(env.elements['alert-panel'].hidden, false);
+  assert.match(env.elements['alert-message'].textContent, /ultimas 24 horas/i);
+  assert.equal(env.elements['dashboard-panel'].hidden, false);
+  assert.equal(env.elements['dashboard-alerts-count'].textContent, '1');
+  assert.equal(env.elements['notification-panel'].hidden, false);
+  assert.equal(env.elements['notification-subhead'].textContent, 'IN_APP | DANGER');
+  assert.equal(env.elements['notification-body'].textContent.includes('Fazenda Santa Luzia'), true);
+}
+
 function main() {
   runSuccessfulAreaFlow();
   runInvalidAreaFlow();
+  runRiskFlowWithFallbackScenario();
   console.log('orbitguard-fire prototype area flow checks passed');
 }
 

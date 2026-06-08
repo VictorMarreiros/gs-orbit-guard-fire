@@ -392,43 +392,52 @@ Nenhuma lacuna bloqueadora impede a extracao inicial de tasks.
 
 ### 9. Testes de integracao/API
 
-- [ ] 9.1 Criar testes de integracao para autenticacao e protecao de dados sensiveis.
+- [x] 9.1 Criar testes de integracao para autenticacao e protecao de dados sensiveis.
   - **Referencias PRD:** RNF004, contrato de auth.
   - **Criterio de pronto:** endpoints de auth validam payload, erros e nao vazam dados indevidos.
+  - **Evidencia de validacao:** teste de integracao adicionado em `backend/test/auth.integration.test.ts`, cobrindo `register`, `login` e `me` na fachada publica `OrbitGuardFireBackend`; o teste valida erro de payload com `ValidationApplicationError`, erro de credenciais com `AuthenticationApplicationError` e confirma que as respostas publicas nao expõem `passwordHash`, `sessionContext`, `accessToken` ou `refreshToken`. Validacao executada com `cd backend && node -r ts-node/register test\\auth.integration.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
-- [ ] 9.2 Criar testes de integracao para criacao e consulta de area monitorada.
+- [x] 9.2 Criar testes de integracao para criacao e consulta de area monitorada.
   - **Referencias PRD:** RF001, CA001, CA002.
   - **Criterio de pronto:** requests validos e invalidos retornam status e payload esperados.
+  - **Evidencia de validacao:** teste de integracao adicionado em `backend/test/monitored-areas.integration.test.ts`, cobrindo criacao autenticada, listagem da area do usuario, normalizacao de payload e rejeicao de cadastro invalido com `ValidationApplicationError`; validacao executada com `cd backend && node -r ts-node/register test\\monitored-areas.integration.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
-- [ ] 9.3 Criar testes de integracao para consulta espacial e mapa.
+- [x] 9.3 Criar testes de integracao para consulta espacial e mapa.
   - **Referencias PRD:** RF002, CA003.
   - **Criterio de pronto:** resposta contem dados suficientes para renderizar area e focos.
+  - **Evidencia de validacao:** novo teste de integracao em `backend/test/monitored-area-map.integration.test.ts` cobrindo a fachada publica `OrbitGuardFireBackend` para cadastro autenticado, consulta espacial via `GET /monitored-areas/:id` e contexto de focos relevantes via `GET /monitored-areas/:id/fire-events`; validacao executada com `cd backend && node -r ts-node/register test\\monitored-area-map.integration.test.ts` e `cd backend && npm run check`, ambos sem erros.
 
-- [ ] 9.4 Criar testes de integracao para endpoint de focos de calor.
+- [x] 9.4 Criar testes de integracao para endpoint de focos de calor.
   - **Referencias PRD:** RF003, CA004, CA005.
   - **Criterio de pronto:** endpoint cobre sucesso, vazio, erro externo e fallback simulado.
+  - **Evidencia de validacao:** novo teste em `backend/test/fire-events.integration.test.ts` cobrindo quatro cenarios observaveis do endpoint `GET /monitored-areas/:id/fire-events`: retorno bem-sucedido com dataset critico mockado, estado vazio com foco fora do escopo operacional, fallback controlado quando a persistencia de focos falha e fallback simulado para dataset moderado. Validacao executada com `cd backend && npm run check`, `cd backend && node -r ts-node/register test\\fire-events.integration.test.ts`, `cd backend && node -r ts-node/register test\\monitored-area-map.integration.test.ts`, `cd backend && node -r ts-node/register test\\fire-events-proximity.test.ts` e `cd backend && node -r ts-node/register test\\mock-data-adapters.test.ts`, todas sem erros.
 
-- [ ] 9.5 Criar testes de integracao para endpoint de clima.
+- [x] 9.5 Criar testes de integracao para endpoint de clima.
   - **Referencias PRD:** RF004, CA004, CA005.
   - **Criterio de pronto:** endpoint cobre sucesso, erro externo e resposta simulada coerente.
+  - **Evidencia de validacao:** teste de integracao adicionado em `backend/test/weather.integration.test.ts`, cobrindo retorno live com snapshot `LIVE`, fallback por falha externa simulada em `getLatestWeatherSnapshot` e resposta mockada coerente para o cenario moderado; validacao executada com `cd backend && node -r ts-node/register test\\weather.integration.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
-- [ ] 9.6 Criar testes de integracao para calculo de risco.
+- [x] 9.6 Criar testes de integracao para calculo de risco.
   - **Referencias PRD:** RF005, RN006, CA004, CA006.
   - **Criterio de pronto:** endpoint retorna score e classificacao corretos nos cenarios principais.
+  - **Evidencia de validacao:** novo teste de integracao em `backend/test/risk.integration.test.ts` cobrindo os cenarios `LOW`, `MODERATE` e `CRITICAL` na fachada `OrbitGuardFireBackend`, com validacoes de `score`, `level`, `severity`, fatores, sinais contributivos, `dataSources` e gatilho de alerta; validacao executada com `cd backend && node -r ts-node/register test\risk.integration.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
-- [ ] 9.7 Criar testes de integracao para listagem de alertas.
+- [x] 9.7 Criar testes de integracao para listagem de alertas.
   - **Referencias PRD:** RF006, CA007, CA008.
   - **Criterio de pronto:** endpoint cobre lista com alertas, lista vazia e filtros basicos.
+  - **Evidencia de validacao:** novo teste de integracao em `backend/test/alerts.integration.test.ts` cobrindo lista populada, filtros por `level`, `monitoredAreaId` e `status`, e estado vazio com `emptyStateMessage`; validacao executada com `cd backend && node -r ts-node/register test\\alerts.integration.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
-- [ ] 9.8 Criar testes de integracao para resumo do dashboard.
+- [x] 9.8 Criar testes de integracao para resumo do dashboard.
   - **Referencias PRD:** RF007, CA009.
   - **Criterio de pronto:** agregacoes do dashboard retornam estrutura prevista e consistencia minima.
+  - **Evidencia de validacao:** novo teste de integracao em `backend/test/dashboard.integration.test.ts` cobrindo o resumo do dashboard para o dataset demo bootstrapped e para um usuario autenticado sem areas monitoradas, validando estrutura, contadores, `areasByRiskLevel`, `priorityAreas`, `hasActiveAlerts` e estado vazio; validacao executada com `cd backend && node -r ts-node/register test\\dashboard.integration.test.ts` e `cd backend && npm run check`, ambas sem erros.
 
 ### 10. Testes funcionais/E2E
 
-- [ ] 10.1 Validar fluxo de cadastro de area monitorada.
+- [x] 10.1 Validar fluxo de cadastro de area monitorada.
   - **Referencias PRD:** CA001, CA002.
   - **Criterio de pronto:** fluxo de cadastro passa com sucesso e falha controlada para dados invalidos.
+  - **Evidencia de validacao:** smoke test E2E em `prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`, executado com `node prototypes\\orbitguard-fire-prototipo-v2.e2e.test.js`, cobrindo login demonstrativo, cadastro valido de `Fazenda Santa Luzia` com avanço para mapa e resumo espacial, e cadastro invalido com mensagens por campo, destaque visual e foco no primeiro erro. Resultado: `orbitguard-fire prototype area flow checks passed`.
 
 - [ ] 10.2 Validar exibicao da area, raio e focos no mapa.
   - **Referencias PRD:** CA003.

@@ -1,0 +1,15 @@
+{
+  "name": "orbitguard-fire",
+  "private": true,
+  "version": "0.1.0",
+  "description": "OrbitGuard Fire MVP workspace",
+  "scripts": {
+    "check": "node scripts/mvp-pipeline.mjs",
+    "check:mvp": "node scripts/mvp-pipeline.mjs",
+    "check:mvp:test": "node scripts/mvp-pipeline.test.js",
+    "check:backend": "npm --prefix backend run check",
+    "check:prototype": "node --check prototypes/orbitguard-fire-prototipo-v2.e2e.test.js && node prototypes/orbitguard-fire-prototipo-v2.e2e.test.js",
+    "start:backend": "npm --prefix backend run dev",
+    "demo:prototype": "node prototypes/orbitguard-fire-prototipo-v2.e2e.test.js"
+  }
+}

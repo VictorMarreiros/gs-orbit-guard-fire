@@ -6,6 +6,19 @@ O **OrbitGuard Fire** é uma solução digital para monitoramento preventivo de 
 
 A proposta é transformar dados técnicos de fontes como **NASA FIRMS**, **NASA POWER** e **INPE BDQueimadas** em **alertas simples, mapas de risco, recomendações práticas e dashboards operacionais**.
 
+## 0. Documentação do MVP
+
+O repositório já consolida a documentação funcional e técnica do MVP em um guia principal e nos documentos de refinamento abaixo:
+
+- [`docs/mvp-operational-guide.md`](docs/mvp-operational-guide.md) - fluxo principal, mocks, contratos, regras do risco e limitações atuais.
+- [`docs/mvp-foundation.md`](docs/mvp-foundation.md) - baseline de stack e estrategia de entrega.
+- [`docs/mvp-technical-refinement.md`](docs/mvp-technical-refinement.md) - regras tecnicas consolidadas para area, proximidade, dados simulados e notificacao.
+- [`docs/mvp-data-model.md`](docs/mvp-data-model.md) - modelo de dados e persistencia.
+- [`docs/api-contracts.md`](docs/api-contracts.md) - contratos HTTP e formatos de request/response.
+- [`docs/mvp-scope-alignment.md`](docs/mvp-scope-alignment.md) - escopo fechado e fora de escopo preservados.
+- [`docs/mvp-release-checklist.md`](docs/mvp-release-checklist.md) - roteiro objetivo para demonstracao, validacao final e handoff.
+- [`docs/guia-pratico-de-execucao.md`](docs/guia-pratico-de-execucao.md) - passo a passo prático para instalar, iniciar e validar o projeto.
+
 ---
 
 ## 1. Visão do Produto
@@ -70,7 +83,80 @@ Gerar alerta preventivo
 Exibir recomendações e dashboard
 ```
 
----
+### Diagrama consolidado do MVP
+
+```mermaid
+flowchart TD
+    U[Usuario] --> F[Frontend Web]
+    F --> API[API Backend / NestJS]
+
+    API --> MA[Monitored Areas]
+    API --> FE[Fire Events]
+    API --> W[Weather]
+    API --> R[Risk Engine]
+    API --> A[Alerts]
+    API --> D[Dashboard]
+    API --> DB[(PostgreSQL + PostGIS)]
+
+    FIRMS[NASA FIRMS] --> I[Ingestion and Normalization]
+    POWER[NASA POWER] --> I
+    INPE[INPE BDQueimadas] --> I
+
+    I --> DB
+    DB --> R
+    R --> A
+    R --> D
+    A --> N[In-app Notification]
+    D --> F
+    N --> F
+```
+
+### Diagrama em PlantUML
+
+```plantuml
+@startuml
+title OrbitGuard Fire - Container Diagram
+
+actor Usuario as user
+
+rectangle "OrbitGuard Fire" {
+  rectangle "Frontend Web\n(React + Vite)" as web
+  rectangle "Backend API\n(NestJS)" as api
+  database "PostgreSQL + PostGIS" as db
+  rectangle "Risk Engine" as risk
+  rectangle "Ingestion and Normalization" as ingestion
+  rectangle "Monitored Areas" as monitoredAreas
+  rectangle "Fire Events" as fireEvents
+  rectangle "Weather" as weather
+  rectangle "Alerts" as alerts
+  rectangle "Dashboard" as dashboard
+}
+
+cloud "NASA FIRMS" as firms
+cloud "NASA POWER" as power
+cloud "INPE BDQueimadas" as inpe
+
+user --> web : usa
+web --> api : consome
+api --> monitoredAreas
+api --> fireEvents
+api --> weather
+api --> risk : solicita calculo
+api --> alerts
+api --> dashboard
+api --> db : persiste e consulta
+api --> ingestion : solicita dados
+ingestion --> firms : consulta
+ingestion --> power : consulta
+ingestion --> inpe : consulta
+ingestion --> db : normaliza
+risk --> db : le sinais e grava score
+risk --> api : retorna score e alerta
+alerts --> web : notificacao in-app
+dashboard --> web
+
+@enduml
+```
 
 ## 4. Funcionalidades do Protótipo
 
@@ -104,7 +190,50 @@ O protótipo navegável representa o fluxo principal da solução com dados simu
 
 ---
 
-## 5. Score de Risco Demonstrativo
+## 5. Fluxo do Usuario
+
+O MVP foi pensado para conduzir o usuario por uma jornada simples e demonstrativa:
+
+1. **Login demonstrativo** - o usuario entra na plataforma com uma sessao simplificada, preparada para evoluir para JWT.
+2. **Cadastro de area** - o usuario informa nome, tipo, coordenadas e raio da area monitorada.
+3. **Carregamento de mapa e contexto espacial** - o frontend exibe a area cadastrada, o raio de monitoramento e os elementos proximos relevantes.
+4. **Calculo de risco** - o sistema combina focos de calor, dados climaticos e regras explicaveis para calcular o score.
+5. **Geracao de alerta** - quando o risco atinge um limiar relevante, um alerta preventivo e criado com justificativa clara.
+6. **Dashboard e notificacao** - o usuario acompanha o resumo operacional no dashboard e recebe a sinalizacao do alerta em formato visual/in-app.
+
+---
+
+## 6. Diagrama de Sequencia
+
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Frontend as Frontend/Prototipo
+    participant Backend as Backend/Mock
+    participant RiskEngine as Motor de Risco
+    participant Dashboard as Dashboard/Alerta
+
+    Usuario->>Frontend: Realiza login demonstrativo
+    Frontend->>Backend: Solicita contexto de sessao
+    Backend-->>Frontend: Retorna usuario e permissao
+
+    Usuario->>Frontend: Cadastra area monitorada
+    Frontend->>Backend: Envia dados da area
+    Backend-->>Frontend: Confirma cadastro e contexto espacial
+
+    Frontend->>Backend: Solicita focos de calor e dados climaticos
+    Backend-->>Frontend: Entrega dados mockados com fallback
+    Frontend->>RiskEngine: Calcula score de risco
+    RiskEngine-->>Frontend: Retorna score, nivel e fatores
+
+    RiskEngine->>Dashboard: Dispara alerta preventivo
+    Dashboard-->>Frontend: Atualiza resumo, alerta e notificacao
+    Frontend-->>Usuario: Exibe mapa, risco, dashboard e notificacao
+```
+
+---
+
+## 7. Score de Risco Demonstrativo
 
 O protótipo utiliza um cenário controlado para demonstrar o cálculo de risco.
 
@@ -138,7 +267,7 @@ Severidade: DANGER
 
 ---
 
-## 6. Fontes de Dados Previstas
+## 8. Fontes de Dados Previstas
 
 ### NASA FIRMS
 
@@ -177,7 +306,7 @@ Referência: https://terrabrasilis.dpi.inpe.br/queimadas/bdqueimadas/
 
 ---
 
-## 7. Stack Técnica Recomendada
+## 9. Stack Técnica Recomendada
 
 ### Frontend
 
@@ -230,7 +359,7 @@ Referência: https://terrabrasilis.dpi.inpe.br/queimadas/bdqueimadas/
 
 ---
 
-## 8. Arquitetura Macro
+## 10. Arquitetura Macro
 
 ```mermaid
 flowchart TD
@@ -260,7 +389,7 @@ flowchart TD
 
 ---
 
-## 9. Módulos do Backend
+## 11. Módulos do Backend
 
 ```text
 backend/
@@ -296,7 +425,7 @@ backend/
 
 ---
 
-## 10. Modelo de Dados Principal
+## 12. Modelo de Dados Principal
 
 Entidades previstas:
 
@@ -324,7 +453,7 @@ RiskScore 1:N RiskFactor
 
 ---
 
-## 11. Principais Endpoints
+## 13. Principais Endpoints
 
 ### Autenticação
 
@@ -379,7 +508,7 @@ GET /dashboard/map
 
 ---
 
-## 12. Como Executar o Protótipo HTML
+## 14. Como Executar o Protótipo HTML
 
 O protótipo atual é uma versão navegável estática em HTML, CSS e JavaScript puro.
 
@@ -388,7 +517,7 @@ O protótipo atual é uma versão navegável estática em HTML, CSS e JavaScript
 Abra o arquivo no navegador:
 
 ```text
-orbitguard-fire-prototipo-v2.html
+prototypes/orbitguard-fire-prototipo-v2.html
 ```
 
 ### Opção 2 — Rodar com servidor local simples
@@ -402,12 +531,33 @@ python -m http.server 5500
 Depois acesse:
 
 ```text
-http://localhost:5500/orbitguard-fire-prototipo-v2.html
+http://localhost:5500/prototypes/orbitguard-fire-prototipo-v2.html
 ```
+
+### Opção 3 — Usar os scripts raiz do MVP
+
+O repositório expõe comandos de topo para facilitar a execução local e a validação mínima do MVP:
+
+```bash
+npm run check
+npm run check:mvp
+npm run check:mvp:test
+npm run check:backend
+npm run check:prototype
+npm --prefix backend run dev
+```
+
+O comando `npm run check` executa a pipeline mínima do workspace:
+
+1. `npm --prefix backend run check`
+2. `node --check prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`
+3. `node prototypes/orbitguard-fire-prototipo-v2.e2e.test.js`
+
+Para a demonstração do frontend/protótipo, use `npm run demo:prototype` ou abra o HTML diretamente no navegador. Nesta fase, a superfície de frontend do MVP é o protótipo navegável em `prototypes/`.
 
 ---
 
-## 13. Estrutura Recomendada do Repositório
+## 15. Estrutura Recomendada do Repositório
 
 ```text
 orbitguard-fire/
@@ -453,7 +603,7 @@ orbitguard-fire/
 
 ---
 
-## 14. Estratégia de Dados do MVP
+## 16. Estratégia de Dados do MVP
 
 Para garantir estabilidade durante a demonstração, o MVP utiliza uma abordagem híbrida.
 
@@ -478,7 +628,7 @@ A arquitetura está preparada para evoluir com:
 
 ---
 
-## 15. Segurança e Privacidade
+## 17. Segurança e Privacidade
 
 O OrbitGuard Fire manipula dados de localização de áreas monitoradas. Portanto, a evolução do produto deve considerar:
 
@@ -493,7 +643,7 @@ O OrbitGuard Fire manipula dados de localização de áreas monitoradas. Portant
 
 ---
 
-## 16. Observabilidade
+## 18. Observabilidade
 
 Eventos importantes para registrar:
 
@@ -517,7 +667,7 @@ Métricas recomendadas:
 
 ---
 
-## 17. Roadmap Técnico
+## 19. Roadmap Técnico
 
 ### Fase 1 — Protótipo navegável
 
@@ -566,7 +716,7 @@ Métricas recomendadas:
 
 ---
 
-## 18. Critérios de Sucesso do MVP
+## 20. Critérios de Sucesso do MVP
 
 O MVP será considerado bem-sucedido se demonstrar:
 
@@ -582,22 +732,26 @@ O MVP será considerado bem-sucedido se demonstrar:
 
 ---
 
-## 19. Pitch Técnico
+## 21. Pitch Técnico
 
 > O OrbitGuard Fire é uma plataforma de alerta preventivo que usa dados orbitais da NASA e do INPE, combinados com informações climáticas e um motor de risco explicável, para identificar ameaças de queimadas em áreas monitoradas. A solução transforma focos de calor, clima e geolocalização em alertas simples, recomendações práticas e dashboards para produtores, comunidades e gestores públicos.
 
 ---
 
-## 20. Licença
+## 22. Licença
 
 Projeto acadêmico desenvolvido para fins educacionais e demonstrativos.
 
 ---
 
-## 21. Status do Projeto
+## Guia Pratico de Execucao
+
+O passo a passo prático para instalar, subir e validar o projeto está em [`docs/guia-pratico-de-execucao.md`](docs/guia-pratico-de-execucao.md).
+
+## 23. Status do Projeto
 
 ```text
-Status: Protótipo navegável / MVP conceitual
+Status: MVP demonstrativo com protótipo navegável e backend em memória
 Versão: 2.0
 Foco atual: Demonstração do fluxo principal e validação da proposta
 ```

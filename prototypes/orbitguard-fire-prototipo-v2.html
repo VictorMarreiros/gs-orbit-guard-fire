@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>OrbitGuard Fire - Acesso ao fluxo</title>
+      <link rel="icon" href="logo/1-logo.png" />
+      <link rel="stylesheet" href="orbitguard-fire-prototipo-v2.css" />
+    </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-mark" src="logo/1-logo.png" alt="" aria-hidden="true" />
+          <div>
+            <h1>OrbitGuard Fire</h1>
+            <p>Acesso ao fluxo operacional do MVP demonstrativo</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="demo-pill">Acesso preparado | sessão pronta</div>
+          <button class="button button-secondary theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
+            Ativar modo claro
+          </button>
+        </div>
+      </header>
+
+      <section class="hero" aria-label="Fluxo de entrada">
+        <article class="story">
+          <div class="story-brand">
+            <img
+              class="story-brand-logo"
+              src="logo/3-logo.png"
+              alt="OrbitGuard Fire - apresentação institucional"
+            />
+            <div class="story-brand-copy">
+              <div class="eyebrow">Capa principal</div>
+              <h2>Entre e siga para o monitoramento.</h2>
+              <p class="lead">
+                O acesso libera o cadastro da area, o mapa e os alertas sem ruido tecnico. Esta
+                entrada foi escrita para orientar a leitura do fluxo com passos diretos e sem
+                excesso de explicacao.
+              </p>
+            </div>
+          </div>
+
+          <div class="story-highlights" aria-label="Destaques da capa">
+            <span class="chip">Leitura operacional</span>
+            <span class="chip">Mapa, risco e alerta</span>
+            <span class="chip">Tema claro e escuro</span>
+          </div>
+
+            <div class="flow" aria-label="Fluxo resumido">
+              <div class="flow-item">
+                <div class="flow-index">1</div>
+                <div>
+                  <strong>Use o acesso pronto</strong>
+                  <span>Email e senha prontas para iniciar a jornada.</span>
+                </div>
+              </div>
+              <div class="flow-item">
+                <div class="flow-index">2</div>
+                <div>
+                  <strong>Confirme a sessão</strong>
+                  <span>A permissão aparece de forma simples para seguir adiante.</span>
+                </div>
+              </div>
+              <div class="flow-item">
+                <div class="flow-index">3</div>
+                <div>
+                  <strong>Avance para a análise</strong>
+                  <span>A área cadastrada leva ao mapa, ao risco e ao resumo final.</span>
+                </div>
+              </div>
+            </div>
+
+          <div class="insight-grid" aria-label="Resumo do contexto demonstrativo">
+            <div class="insight">
+              <div class="label">Conta</div>
+              <div class="value">Maria Oliveira</div>
+            </div>
+            <div class="insight">
+              <div class="label">Origem</div>
+              <div class="value">Ambiente de teste</div>
+            </div>
+            <div class="insight">
+              <div class="label">Status</div>
+              <div class="value">Pronta para avançar</div>
+            </div>
+          </div>
+        </article>
+
+        <section class="login-card" id="login-card" aria-labelledby="login-title">
+          <div id="login-view">
+            <div class="section-brand section-brand-featured">
+              <img class="section-brand-logo" src="logo/2-logo.png" alt="OrbitGuard Fire" />
+              <div class="section-brand-copy">
+                <div class="eyebrow">OrbitGuard Fire</div>
+                <p>Entrada demonstrativa com a mesma linguagem visual das telas operacionais.</p>
+              </div>
+            </div>
+            <h3 id="login-title">Acessar o fluxo</h3>
+            <p>Use o acesso pronto para seguir para o cadastro da área e o restante da jornada.</p>
+
+            <div class="success-banner" id="success-banner" role="status" aria-live="polite"></div>
+            <form class="form" id="login-form">
+              <div class="field">
+                <label for="email">Email</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  value="maria@example.com"
+                  placeholder="maria@example.com"
+                />
+              </div>
+
+              <div class="field">
+                <label for="password">Senha</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  value="SenhaSegura123!"
+                  placeholder="SenhaSegura123!"
+                />
+              </div>
+
+              <div class="actions">
+                <button class="button button-primary" type="submit">Entrar</button>
+                <button class="button button-secondary" type="button" id="demo-fill">
+                  Preencher acesso
+                </button>
+              </div>
+
+              <div class="helper" aria-label="Credenciais de acesso">
+                <span class="chip">acesso pronto: maria@example.com</span>
+                <span class="chip">senha pronta: SenhaSegura123!</span>
+                <span class="chip">sessão preparada</span>
+              </div>
+
+              <div class="error" id="login-error" aria-live="polite"></div>
+            </form>
+          </div>
+
+          <div class="app" id="app-view" aria-live="polite">
+            <div class="logout-row">
+              <div>
+                <h3>Entrada confirmada</h3>
+                <p>O fluxo principal reconhece o acesso pronto e libera a jornada.</p>
+              </div>
+              <button class="button button-secondary" type="button" id="logout-button">Sair</button>
+            </div>
+
+            <div class="app-card">
+              <div class="session-nav" aria-label="Resumo das sessoes autenticadas">
+                <div class="eyebrow">Sessões do fluxo autenticado</div>
+                <div class="session-nav-head">
+                  <h3>Em qual sessão estamos</h3>
+                  <p>
+                    As marcas A, B e C organizam o fluxo em telas internas separadas para reduzir
+                    ruído visual e deixar claro qual etapa está ativa.
+                  </p>
+                </div>
+
+                <div class="workspace-switcher" role="tablist" aria-label="Sessões do fluxo">
+                  <button class="workspace-tab is-active" type="button" data-workspace-step="A" aria-pressed="true">
+                    <span class="workspace-tab-label">Sessão A</span>
+                    <strong>Cadastro</strong>
+                    <span>Formulário e resumo da área</span>
+                  </button>
+                  <button class="workspace-tab" type="button" data-workspace-step="B" aria-pressed="false">
+                    <span class="workspace-tab-label">Sessão B</span>
+                    <strong>Mapa e risco</strong>
+                    <span>Contexto espacial e score explicável</span>
+                  </button>
+                  <button class="workspace-tab" type="button" data-workspace-step="C" aria-pressed="false">
+                    <span class="workspace-tab-label">Sessão C</span>
+                    <strong>Alerta e dashboard</strong>
+                    <span>Saída operacional e notificação</span>
+                  </button>
+                </div>
+
+                <div class="workspace-active" id="workspace-active-label">Sessão A ativa</div>
+
+                <div class="next-steps" aria-label="Resumo das etapas do fluxo">
+                  <div class="next-step session-step">
+                    <div class="flow-index session-index" aria-hidden="true">A</div>
+                    <div>
+                      <div class="session-tag">Sessão A</div>
+                      <strong>Cadastro de area</strong>
+                      <span>Registre a area para seguir para o mapa e o risco.</span>
+                    </div>
+                  </div>
+                  <div class="next-step session-step">
+                    <div class="flow-index session-index" aria-hidden="true">B</div>
+                    <div>
+                      <div class="session-tag">Sessão B</div>
+                      <strong>Mapa e score de risco</strong>
+                      <span>Camada espacial que mostra o contexto do cadastro e o cálculo do risco.</span>
+                    </div>
+                  </div>
+                  <div class="next-step session-step">
+                    <div class="flow-index session-index" aria-hidden="true">C</div>
+                    <div>
+                      <div class="session-tag">Sessão C</div>
+                      <strong>Alerta e dashboard</strong>
+                      <span>Resumo final do fluxo com leitura operacional.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="session-grid" data-session-step="A">
+                <div class="mini-card">
+                  <div class="label">Usuario atual</div>
+                  <div class="value" id="current-user"></div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">Permissoes</div>
+                  <div class="value" id="current-permissions"></div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">Sessão</div>
+                  <div class="value token" id="current-token"></div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">Expira em</div>
+                  <div class="value" id="current-expiry"></div>
+                </div>
+              </div>
+
+              <div class="permission-denied-card" data-session-step="A">
+                <div>
+                  <strong>Teste de permissao demonstrativa</strong>
+                  <span>
+                    A sessao atual nao permite visualizar areas privadas. Use o controle para
+                    demonstrar o bloqueio visual sem acionar permissao real do navegador.
+                  </span>
+                </div>
+                <div class="permission-denied-actions">
+                  <button class="button button-secondary" type="button" id="private-area-toggle">
+                    Simular area privada
+                  </button>
+                </div>
+              </div>
+
+              <div class="permission-denied-card" id="permission-denied-card" data-session-step="A" hidden role="alert" aria-live="polite">
+                <div>
+                  <strong>Acesso restrito a area privada</strong>
+                  <span id="permission-denied-message">
+                    Esta sessão não tem acesso a áreas privadas.
+                  </span>
+                </div>
+                <div class="permission-denied-actions">
+                  <span class="alert-chip" id="permission-denied-chip">Acesso restrito</span>
+                </div>
+              </div>
+
+              <section class="area-card" data-session-step="A" aria-labelledby="area-form-title">
+                <div class="area-card-head">
+                  <div>
+                    <h3 id="area-form-title">Cadastro de area</h3>
+                    <p>
+                      Preencha os dados para salvar a area e continuar para o mapa.
+                    </p>
+                  </div>
+                  <div class="area-status" id="area-status">Nenhuma area salva</div>
+                </div>
+
+                <div class="success-banner" id="area-success" role="status" aria-live="polite"></div>
+                <form class="form-card" id="area-form" novalidate>
+                  <div class="invalid-summary" id="area-invalid-summary" role="alert" aria-live="assertive">
+                    <strong>Revise os campos</strong>
+                    Revise os campos destacados antes de continuar.
+                  </div>
+
+                  <div class="field">
+                    <label for="area-name">Nome da area</label>
+                    <input
+                      id="area-name"
+                      name="name"
+                      type="text"
+                      maxlength="80"
+                      placeholder="Fazenda Santa Luzia"
+                      aria-describedby="area-name-error"
+                    />
+                    <div class="field-error" id="area-name-error" aria-live="polite"></div>
+                  </div>
+
+                  <div class="field">
+                    <label for="area-type">Tipo de area</label>
+                    <select id="area-type" name="type" aria-describedby="area-type-error">
+                      <option value="">Selecione o tipo</option>
+                      <option value="RURAL_PROPERTY">Propriedade rural</option>
+                      <option value="RURAL_COMMUNITY">Comunidade rural</option>
+                      <option value="SCHOOL">Escola rural</option>
+                      <option value="CONSERVATION_AREA">Area de conservacao</option>
+                      <option value="INDIGENOUS_TERRITORY">Territorio indigena</option>
+                    </select>
+                    <div class="field-error" id="area-type-error" aria-live="polite"></div>
+                  </div>
+
+                  <div class="area-grid">
+                    <div class="field">
+                      <label for="area-latitude">Latitude</label>
+                      <input
+                        id="area-latitude"
+                        name="latitude"
+                        type="number"
+                        step="0.000001"
+                        min="-90"
+                        max="90"
+                        placeholder="-15.7801"
+                        aria-describedby="area-latitude-error"
+                      />
+                      <div class="field-error" id="area-latitude-error" aria-live="polite"></div>
+                    </div>
+
+                    <div class="field">
+                      <label for="area-longitude">Longitude</label>
+                      <input
+                        id="area-longitude"
+                        name="longitude"
+                        type="number"
+                        step="0.000001"
+                        min="-180"
+                        max="180"
+                        placeholder="-47.9292"
+                        aria-describedby="area-longitude-error"
+                      />
+                      <div class="field-error" id="area-longitude-error" aria-live="polite"></div>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="area-radius">Raio de monitoramento (km)</label>
+                    <input
+                      id="area-radius"
+                      name="radiusKm"
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      max="50"
+                      placeholder="10"
+                      aria-describedby="area-radius-error"
+                    />
+                    <div class="field-error" id="area-radius-error" aria-live="polite"></div>
+                  </div>
+
+                  <div class="actions">
+                    <button class="button button-primary" type="submit">Salvar e continuar</button>
+                    <button class="button button-secondary" type="button" id="area-reset">
+                      Limpar
+                    </button>
+                  </div>
+
+                  <div class="helper" aria-label="Limites do formulario">
+                    <span class="chip">nome: 3 a 80 caracteres</span>
+                    <span class="chip">latitude: -90 a 90</span>
+                    <span class="chip">longitude: -180 a 180</span>
+                    <span class="chip">raio: 0.1 km a 50 km</span>
+                  </div>
+
+                  <div class="error" id="area-form-error" aria-live="polite"></div>
+                </form>
+              </section>
+
+              <section class="area-summary" data-session-step="A" aria-labelledby="area-summary-title">
+                <div class="logout-row">
+                  <div>
+                    <h3 id="area-summary-title">Area salva</h3>
+                    <p>Os dados principais ficam aqui quando a area for salva.</p>
+                  </div>
+                </div>
+                <div id="area-empty-state" class="area-summary-empty">
+                  Cadastre uma area para continuar.
+                </div>
+                <div class="area-summary-grid" id="area-summary-grid" hidden>
+                  <div class="mini-card">
+                    <div class="label">Nome</div>
+                    <div class="value" id="summary-name"></div>
+                  </div>
+                  <div class="mini-card">
+                    <div class="label">Tipo</div>
+                    <div class="value" id="summary-type"></div>
+                  </div>
+                  <div class="mini-card">
+                    <div class="label">Centro</div>
+                    <div class="value" id="summary-center"></div>
+                  </div>
+                  <div class="mini-card">
+                    <div class="label">Raio</div>
+                    <div class="value" id="summary-radius"></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="map-card" data-session-step="B" aria-labelledby="risk-map-title">
+                <div class="logout-row">
+                  <div>
+                    <h3 id="risk-map-title">Mapa de risco</h3>
+                    <p>
+                      Area, raio e focos aparecem juntos para uma leitura rapida.
+                    </p>
+                  </div>
+                  <div class="area-status" id="map-status">Aguardando area salva</div>
+                </div>
+
+                <div class="map-layout">
+                  <div class="map-stage" aria-label="Mapa demonstrativo do risco">
+                    <div class="map-empty" id="map-empty">
+                      <div>
+                        <strong>Cadastre uma area para ver o mapa.</strong>
+                        <span>O centro, o raio e os focos aparecem aqui.</span>
+                      </div>
+                    </div>
+
+                    <div class="loading-state loading-overlay" id="map-loading-state" hidden aria-live="polite" aria-busy="true">
+                    <div class="loading-badge">Montando o mapa</div>
+                    <div class="loading-title" id="map-loading-title">
+                        Estamos montando o mapa da area.
+                      </div>
+                      <div class="loading-dots" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                      <div class="loading-skeleton" aria-hidden="true">
+                        <div class="loading-skeleton-line wide"></div>
+                        <div class="loading-skeleton-line medium"></div>
+                        <div class="loading-skeleton-line short"></div>
+                      </div>
+                      <div class="loading-detail" id="map-loading-detail">
+                        Em instantes voce vera o centro, o raio e os focos relevantes.
+                      </div>
+                    </div>
+
+                    <div class="map-surface" id="map-surface" hidden>
+                      <div class="map-ring map-ring-operational" aria-hidden="true"></div>
+                      <div class="map-ring map-ring-monitored" aria-hidden="true"></div>
+                      <div class="map-halo" aria-hidden="true"></div>
+                      <div class="map-center" id="map-center">
+                        <span>Centro da area</span>
+                        <strong id="map-center-label">--</strong>
+                      </div>
+                      <div id="map-fire-markers"></div>
+                    </div>
+                  </div>
+
+                  <div class="map-sidebar">
+                    <div class="map-brand">
+                      <div class="eyebrow">OrbitGuard Fire</div>
+                      <p>Apoio visual discreto para a leitura espacial.</p>
+                    </div>
+                    <div class="fallback-banner compact" id="map-fallback-banner" hidden>
+                      <div>
+                        <strong id="map-fallback-title">Dados preparados em uso</strong>
+                        <span id="map-fallback-text">
+                          As fontes externas estão indisponíveis agora. O mapa segue com dados
+                          preparados para manter a leitura da área.
+                        </span>
+                      </div>
+                      <div class="fallback-banner-meta">
+                        <span class="source-chip" id="map-fallback-source">Dados preparados</span>
+                        <span class="source-chip" id="map-fallback-mode">Consulta mantida</span>
+                      </div>
+                    </div>
+
+                    <div class="mini-card map-context">
+                      <div class="label">Contexto espacial</div>
+                      <div class="value" id="map-context-text">
+                        Cadastre uma area para liberar o mapa.
+                      </div>
+                    </div>
+
+                    <div class="mini-card">
+                      <div class="label">Legenda</div>
+                      <div class="legend-list" id="map-legend"></div>
+                    </div>
+
+                    <div class="mini-card">
+                      <div class="label">Focos relevantes</div>
+                      <div class="fire-list" id="map-fire-summary"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="risk-card" data-session-step="B" aria-labelledby="risk-calculation-title">
+                <div class="logout-row">
+                  <div>
+                    <h3 id="risk-calculation-title">Experiencia de calculo</h3>
+                    <p>
+                      Focos e clima aparecem juntos para mostrar o que pesa no score.
+                    </p>
+                  </div>
+                  <div class="header-actions">
+                    <button class="button button-secondary button-fallback" type="button" id="fallback-toggle">
+                      Usar dados preparados
+                    </button>
+                    <div class="status-chip" id="risk-status">Aguardando area salva</div>
+                  </div>
+                </div>
+
+                <div class="risk-empty" id="risk-empty-state">
+                  Cadastre uma area para ver focos e clima.
+                </div>
+
+                <div class="fallback-banner" id="risk-fallback-banner" hidden>
+                  <div>
+                    <strong id="risk-fallback-title">Dados preparados em uso</strong>
+                    <span id="risk-fallback-text">
+                      As fontes externas estão indisponíveis agora. O cálculo segue com dados
+                      preparados para manter a leitura do risco.
+                    </span>
+                  </div>
+                  <div class="fallback-banner-meta">
+                    <span class="source-chip" id="risk-fallback-source">Dados preparados</span>
+                    <span class="source-chip" id="risk-fallback-mode">Consulta mantida</span>
+                  </div>
+                </div>
+
+                <div class="loading-state risk-loading" id="risk-loading-state" hidden aria-live="polite" aria-busy="true">
+                  <div class="loading-badge">Montando o resumo de risco</div>
+                  <div class="loading-title" id="risk-loading-title">
+                    Estamos montando o resumo de risco da area.
+                  </div>
+                  <div class="loading-dots" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <div class="loading-skeleton" aria-hidden="true">
+                    <div class="loading-skeleton-line wide"></div>
+                    <div class="loading-skeleton-line medium"></div>
+                    <div class="loading-skeleton-line short"></div>
+                  </div>
+                  <div class="loading-detail" id="risk-loading-detail">
+                    Em instantes voce vera score, causas e a proxima acao.
+                  </div>
+                </div>
+
+                <div class="risk-result" id="risk-result" hidden>
+                  <div class="risk-result-main">
+                    <div class="risk-score-panel">
+                      <div class="label">Resultado do score</div>
+                      <div class="risk-score-line">
+                        <div class="risk-score-value">
+                          <span id="risk-score-value">0</span><span class="risk-score-max">/100</span>
+                        </div>
+                        <div class="risk-score-meta">
+                          <span class="risk-level-pill low" id="risk-level-pill">Baixo</span>
+                          <span class="risk-severity" id="risk-severity">Prioridade: baixa</span>
+                        </div>
+                      </div>
+                      <div class="risk-score-summary" id="risk-score-summary">
+                        O resultado aparece aqui depois da analise.
+                      </div>
+                    </div>
+
+                    <div class="risk-brief-panel">
+                      <div class="label">Leitura imediata</div>
+                      <div class="value" id="risk-score-brief">
+                        O score mostra se a area continua controlada ou pede atencao.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="risk-factor-panel">
+                    <div class="label">Fatores explicaveis</div>
+                    <div class="risk-factor-list" id="risk-factor-list"></div>
+                  </div>
+                </div>
+
+                <div class="risk-layout" id="risk-layout" hidden>
+                  <div class="risk-column">
+                    <div class="mini-card">
+                      <div class="label">Focos considerados</div>
+                      <div class="risk-summary">
+                        <div class="value">
+                          Janela de 24h para a area monitorada.
+                        </div>
+                        <div class="risk-source-note">
+                          <span class="source-chip" id="risk-source-chip">Dados preparados</span>
+                          <span class="source-chip" id="risk-fire-count">0 focos relevantes</span>
+                          <span class="source-chip" id="risk-fire-distance">Distancia indefinida</span>
+                        </div>
+                      </div>
+                      <div class="signal-list" id="risk-fire-summary"></div>
+                    </div>
+
+                    <div class="mini-card">
+                      <div class="label">Clima observado</div>
+                      <div class="weather-grid" id="risk-weather-grid"></div>
+                    </div>
+                  </div>
+
+                  <div class="risk-column">
+                    <div class="mini-card">
+                      <div class="label">Sinais que entram no score</div>
+                      <div class="signal-list" id="risk-signal-list"></div>
+                    </div>
+
+                    <div class="mini-card">
+                      <div class="label">Leitura do calculo</div>
+                      <div class="value" id="risk-narrative">
+                        Os insumos aparecem antes do resultado para deixar a leitura clara.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="alert-card" data-session-step="C" aria-labelledby="alert-details-title">
+                <div class="logout-row">
+                  <div>
+                    <div class="section-brand">
+                      <div class="eyebrow">OrbitGuard Fire</div>
+                      <p>Alerta preventivo com leitura direta e foco na próxima ação.</p>
+                    </div>
+                    <h3 id="alert-details-title">Detalhe do alerta</h3>
+                    <p>
+                      O alerta resume o risco e mostra a proxima acao.
+                    </p>
+                  </div>
+                  <div class="status-chip" id="alert-status-chip">Sem alerta ativo</div>
+                </div>
+
+                <div class="alert-empty" id="alert-empty-state">
+                  Nenhum alerta ativo no momento. Continue acompanhando a area.
+                </div>
+
+                <div class="alert-panel" id="alert-panel" hidden>
+                  <div class="alert-panel-header">
+                    <div class="alert-title">
+                      <strong id="alert-title">Alerta de risco</strong>
+                      <span id="alert-summary">
+                        O alerta resume por que a area pede atencao.
+                      </span>
+                    </div>
+                    <div class="alert-meta">
+                      <span class="alert-chip active" id="alert-status">Ativo</span>
+                      <span class="alert-chip in-app" id="alert-channel">Visual</span>
+                      <span class="alert-chip" id="alert-level">Crítico</span>
+                      <span class="alert-chip" id="alert-severity">Alta</span>
+                    </div>
+                  </div>
+
+                  <div class="alert-message">
+                    <div class="label">Mensagem do alerta</div>
+                    <div class="value" id="alert-message">
+                      Nenhum alerta ativo no momento. Continue acompanhando a area.
+                    </div>
+                  </div>
+
+                  <div class="alert-grid">
+                    <div class="mini-card">
+                      <div class="label">Causas principais</div>
+                      <div class="alert-list" id="alert-causes"></div>
+                    </div>
+
+                    <div class="mini-card">
+                      <div class="label">Recomendacoes acionaveis</div>
+                      <div class="alert-list" id="alert-actions"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="dashboard-card" data-session-step="C" aria-labelledby="dashboard-title">
+                <div class="logout-row">
+                  <div>
+                    <div class="section-brand">
+                      <div class="eyebrow">OrbitGuard Fire</div>
+                      <p>Painel gerencial com leitura consistente da mesma marca.</p>
+                    </div>
+                    <h3 id="dashboard-title">Dashboard gerencial</h3>
+                    <p>
+                      A visao consolidada resume areas, alertas e focos recentes.
+                    </p>
+                  </div>
+                  <div class="status-chip" id="dashboard-status-chip">Aguardando area salva</div>
+                </div>
+
+                <div class="dashboard-empty" id="dashboard-empty-state">
+                  Nenhum alerta ativo para esta area. O resumo fica pronto quando o risco subir.
+                </div>
+
+                <div id="dashboard-panel" hidden>
+                  <div class="dashboard-grid">
+                    <div class="metric-card">
+                      <div class="label">Areas monitoradas</div>
+                      <div class="value" id="dashboard-areas-count">0</div>
+                      <div class="note">Areas ativas na demo.</div>
+                    </div>
+                    <div class="metric-card">
+                      <div class="label">Alertas ativos</div>
+                      <div class="value" id="dashboard-alerts-count">0</div>
+                      <div class="note">Alertas em andamento.</div>
+                    </div>
+                    <div class="metric-card">
+                      <div class="label">Score medio</div>
+                      <div class="value" id="dashboard-average-score">0</div>
+                      <div class="note">Media da area atual.</div>
+                    </div>
+                    <div class="metric-card">
+                      <div class="label">Focos recentes</div>
+                      <div class="value" id="dashboard-fire-count">0</div>
+                      <div class="note">Focos considerados.</div>
+                    </div>
+                  </div>
+
+                  <div class="dashboard-body">
+                    <div class="dashboard-section">
+                      <div class="mini-card">
+                        <div class="label">Distribuicao por nivel</div>
+                        <div class="risk-source-note" id="dashboard-risk-levels"></div>
+                      </div>
+
+                      <div class="mini-card">
+                        <div class="label">Areas prioritarias</div>
+                        <div class="priority-list" id="dashboard-priority-list"></div>
+                      </div>
+                    </div>
+
+                    <div class="dashboard-section">
+                      <div class="mini-card">
+                        <div class="label">Leitura executiva</div>
+                        <div class="value" id="dashboard-executive-note">
+                          Acompanhe aqui a area atual e os alertas ativos.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="notification-card" data-session-step="C" aria-labelledby="notification-title">
+                <div class="logout-row">
+                  <div>
+                    <h3 id="notification-title">Demonstracao de notificacao visual</h3>
+                    <p>
+                      O preview visual fecha a jornada com a mensagem final.
+                    </p>
+                  </div>
+                  <div class="status-chip" id="notification-status-chip">Sem notificacao ativa</div>
+                </div>
+
+                <div class="notification-empty" id="notification-empty-state">
+                  Nenhuma notificacao ativa. O preview aparece quando o risco subir.
+                </div>
+
+                <div class="notification-layout" id="notification-panel" hidden>
+                  <div class="phone-frame">
+                    <div class="phone-notch" aria-hidden="true"></div>
+                    <div class="phone-screen">
+                      <div class="phone-time">
+                        <span>OrbitGuard Fire</span>
+                        <span id="notification-time">14:03</span>
+                      </div>
+                      <div class="notification-preview active">
+                        <div class="notification-header">
+                          <div>
+                            <strong id="notification-headline">Alerta de risco</strong>
+                            <span id="notification-subhead">Alerta visual | Alta</span>
+                          </div>
+                          <span class="alert-chip active" id="notification-badge">Crítico</span>
+                        </div>
+                        <div class="notification-body" id="notification-body">
+                          Nenhuma notificacao ativa. O preview aparece quando o risco subir.
+                        </div>
+                        <div class="notification-actions" id="notification-actions"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mini-card">
+                    <div class="label">Contexto do preview</div>
+                    <div class="value" id="notification-context">
+                      Prévia da mensagem.
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <footer class="workspace-footer" aria-label="Navegacao sequencial do fluxo">
+                <div class="workspace-footer-copy">
+                  <div class="label">Navegacao sequencial</div>
+                  <div class="workspace-footer-brand" id="workspace-footer-brand">
+                    OrbitGuard Fire | fluxo demonstrativo
+                  </div>
+                  <div class="value" id="workspace-footer-status">Sessao A de 3 ativa.</div>
+                </div>
+                <div class="workspace-footer-actions">
+                  <button class="button button-secondary workspace-nav-button" type="button" id="workspace-prev">
+                    Voltar
+                  </button>
+                  <button class="button button-primary workspace-nav-button" type="button" id="workspace-next">
+                    Avancar
+                  </button>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="orbitguard-fire-prototipo-v2.js"></script>
+  </body>
+</html>

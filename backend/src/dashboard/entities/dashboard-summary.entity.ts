@@ -17,4 +17,5 @@ export interface DashboardSummaryEntity {
   recentFireEventsCount: number;
   areasByRiskLevel: Record<RiskLevel, number>;
   priorityAreas: DashboardPriorityArea[];
+  hasActiveAlerts: boolean;
 }

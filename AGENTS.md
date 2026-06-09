@@ -1,19 +1,19 @@
 # AGENTS.md
 
-## Purpose
+## Propósito
 
-This file is the operational guide for agents and technical contributors working in this repository.
-Use it to implement changes consistently with the MVP decisions already documented elsewhere.
+Este arquivo é o guia operacional para agentes e contribuidores técnicos neste repositório.
+Use-o para implementar mudanças de forma consistente com as decisões de MVP já documentadas em outros arquivos.
 
-## Project State
+## Estado Do Projeto
 
-- This repository is in the initial implementation phase of the OrbitGuard Fire MVP.
-- Product scope, technical refinement, data model, and API contracts are already defined.
-- Current work should preserve the demonstrative MVP flow while keeping the codebase ready to evolve toward JWT, PostgreSQL, and PostGIS-backed behavior.
+- Este repositório está na fase inicial de implementação do MVP do OrbitGuard Fire.
+- Escopo do produto, refinamento técnico, modelo de dados e contratos de API já estão definidos.
+- O trabalho atual deve preservar o fluxo demonstrativo do MVP e, ao mesmo tempo, manter a base pronta para evoluir para comportamentos apoiados por JWT, PostgreSQL e PostGIS.
 
-## Source of Truth
+## Fonte De Verdade
 
-Read the relevant documents before changing code:
+Leia os documentos relevantes antes de alterar código:
 
 - `README.md`
 - `tasks/prd-orbitguard-fire-mvp.md`
@@ -22,55 +22,78 @@ Read the relevant documents before changing code:
 - `docs/mvp-technical-refinement.md`
 - `docs/mvp-data-model.md`
 - `docs/api-contracts.md`
+- `docs/language-conventions.md`
+- `docs/git-conventions.md`
 
-If implementation conflicts with one of these documents, align the code to the documented decision or update the affected document in the same change.
+Se a implementação entrar em conflito com algum desses documentos, alinhe o código à decisão documentada ou atualize o documento afetado na mesma alteração.
 
-## Current Technical Direction
+## Direção Técnica Atual
 
 - Backend: NestJS + TypeScript
-- Persistence model: Prisma targeting PostgreSQL
-- MVP strategy: controlled mocks first, with coherent fallback behavior
-- API surface: documented HTTP contracts must remain stable and explicit
-- Architecture constraint: do not block future evolution to JWT authentication and PostGIS-enabled spatial workflows
+- Modelo de persistência: Prisma com PostgreSQL
+- Estratégia do MVP: mocks controlados primeiro, com fallback coerente
+- Superfície de API: contratos HTTP documentados devem permanecer estáveis e explícitos
+- Restrição de arquitetura: não bloquear a evolução futura para autenticação JWT e workflows espaciais com PostGIS
 
-## Repository Responsibilities
+## Responsabilidades Do Repositório
 
-- `backend/`: domain modules, contracts, entities, services, tests, and integration adapters
-- `database/`: Prisma schema and database-related assets
-- `docs/`: technical decisions, contracts, and refinement artifacts
-- `tasks/`: PRD, execution breakdown, and delivery tracking
+- `backend/`: módulos de domínio, contratos, entities, services, tests e adaptadores de integração
+- `database/`: schema Prisma e assets relacionados ao banco de dados
+- `docs/`: decisões técnicas, contratos e artefatos de refinamento
+- `tasks/`: PRD, decomposição de execução e acompanhamento de entrega
 
-## Implementation Rules
+## Regras De Implementação
 
-- Prefer incremental delivery aligned with the MVP flow, not speculative production-grade expansion.
-- Start from documented mocks and fallback scenarios before introducing real external integrations.
-- Keep domain concepts, Prisma schema, and HTTP contracts consistent with each other.
-- Do not invent parallel architecture, duplicate modules, or alternate contract shapes outside the documented direction.
+- Prefira entrega incremental alinhada ao fluxo do MVP, e não expansão especulativa de produção.
+- Comece por mocks documentados e cenários de fallback antes de introduzir integrações externas reais.
+- Mantenha conceitos de domínio, schema Prisma e contratos HTTP consistentes entre si.
+- Não invente arquitetura paralela, módulos duplicados ou formas alternativas de contrato fora da direção documentada.
 
-## Update Rules
+## Regras De Atualização
 
-- If you change entities or domain structures, review the Prisma schema and the related technical documentation.
-- If you change HTTP request or response shapes, update the TypeScript contracts and `docs/api-contracts.md` in the same change.
-- If a task status changes, update `tasks/tasks-orbitguard-fire-mvp.md` in the same change.
-- Do not mark a task as complete without validation evidence: automated test coverage or an explicit manual verification note.
+- Se você alterar entidades ou estruturas de domínio, revise o schema Prisma e a documentação técnica relacionada.
+- Se você alterar request ou response shapes HTTP, atualize os contracts TypeScript e `docs/api-contracts.md` na mesma alteração.
+- Se o status de uma task mudar, atualize `tasks/tasks-orbitguard-fire-mvp.md` na mesma alteração.
+- Não marque uma task como concluída sem evidência de validação: cobertura automatizada de testes ou uma nota explícita de verificação manual.
 
-## Commit Strategy
+## Estratégia De Commit
 
-Prefer semantic commits with one concern per commit:
+Prefira commits semânticos com um único assunto por commit:
 
-- `docs(...)` for planning, PRD, and technical documentation
-- `feat(domain)` for entities, enums, and Prisma schema changes
-- `feat(api)` for contracts, endpoints, and shared API shapes
-- `test(...)` for unit, integration, or E2E coverage
-- `chore(...)` for setup, tooling, and non-functional repository work
+- `docs(...)` para planejamento, PRD e documentação técnica
+- `feat(domain)` para entities, enums e mudanças no schema Prisma
+- `feat(api)` para contracts, endpoints e shared API shapes
+- `test(...)` para cobertura unitária, integração ou E2E
+- `chore(...)` para setup, tooling e trabalho não funcional do repositório
 
-Avoid mixing documentation, domain modeling, and API contract work in a single commit when they can be separated cleanly.
+Evite misturar documentação, modelagem de domínio e trabalho de contratos de API no mesmo commit quando isso puder ser separado com clareza.
 
-## Minimum Done Criteria
+## Convenções De Git
 
-Before considering work complete:
+- Branches devem usar um prefixo claro de tipo, com `feat/` como padrão para trabalho de funcionalidade.
+- Outros prefixes aceitos são `fix/`, `docs/`, `test/` e `chore/` quando descreverem melhor o escopo da branch.
+- Nomes de branch devem ser curtos, em lowercase e com `kebab-case` depois do prefixo, por exemplo `feat/git-conventions`.
+- Mensagens de commit devem ser apenas subjects de uma linha.
+- Não adicione corpo de commit, parágrafos, bullets ou explicações em múltiplas linhas.
+- Prefira subjects no estilo Conventional Commits, por exemplo `feat(git): add branch naming rule` ou `docs(git): define commit format`.
+- Não use parênteses vazios como `feat()`: use `feat(scope): ...` quando houver scope, ou `feat: ...` quando não houver.
+- Mantenha o subject no imperativo, conciso e limitado à mudança em si.
+- O subject deve idealmente ter até 60 caracteres; até 72 ainda costuma ser aceitável.
+- Quando uma alteração for pequena e não precisar de scope, use o subject mais curto possível que ainda comunique a intenção.
 
-- code matches the documented MVP direction
-- affected docs and tasks are updated
-- contracts and domain remain internally consistent
-- validation was executed or explicitly recorded
+Fonte: `docs/git-conventions.md`.
+
+## Convenções De Idioma
+
+- Documentação deve ser escrita em `pt-BR`.
+- Código deve permanecer em `en-US`.
+- Consulte `docs/language-conventions.md` para a regra completa.
+
+## Critérios Mínimos De Conclusão
+
+Antes de considerar o trabalho concluído:
+
+- o código corresponde à direção documentada do MVP
+- a documentação e as tasks afetadas foram atualizadas
+- contracts e domínio continuam consistentes internamente
+- a validação foi executada ou foi registrada explicitamente

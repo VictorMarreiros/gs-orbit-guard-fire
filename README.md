@@ -83,7 +83,80 @@ Gerar alerta preventivo
 Exibir recomendações e dashboard
 ```
 
----
+### Diagrama consolidado do MVP
+
+```mermaid
+flowchart TD
+    U[Usuario] --> F[Frontend Web]
+    F --> API[API Backend / NestJS]
+
+    API --> MA[Monitored Areas]
+    API --> FE[Fire Events]
+    API --> W[Weather]
+    API --> R[Risk Engine]
+    API --> A[Alerts]
+    API --> D[Dashboard]
+    API --> DB[(PostgreSQL + PostGIS)]
+
+    FIRMS[NASA FIRMS] --> I[Ingestion and Normalization]
+    POWER[NASA POWER] --> I
+    INPE[INPE BDQueimadas] --> I
+
+    I --> DB
+    DB --> R
+    R --> A
+    R --> D
+    A --> N[In-app Notification]
+    D --> F
+    N --> F
+```
+
+### Diagrama em PlantUML
+
+```plantuml
+@startuml
+title OrbitGuard Fire - Container Diagram
+
+actor Usuario as user
+
+rectangle "OrbitGuard Fire" {
+  rectangle "Frontend Web\n(React + Vite)" as web
+  rectangle "Backend API\n(NestJS)" as api
+  database "PostgreSQL + PostGIS" as db
+  rectangle "Risk Engine" as risk
+  rectangle "Ingestion and Normalization" as ingestion
+  rectangle "Monitored Areas" as monitoredAreas
+  rectangle "Fire Events" as fireEvents
+  rectangle "Weather" as weather
+  rectangle "Alerts" as alerts
+  rectangle "Dashboard" as dashboard
+}
+
+cloud "NASA FIRMS" as firms
+cloud "NASA POWER" as power
+cloud "INPE BDQueimadas" as inpe
+
+user --> web : usa
+web --> api : consome
+api --> monitoredAreas
+api --> fireEvents
+api --> weather
+api --> risk : solicita calculo
+api --> alerts
+api --> dashboard
+api --> db : persiste e consulta
+api --> ingestion : solicita dados
+ingestion --> firms : consulta
+ingestion --> power : consulta
+ingestion --> inpe : consulta
+ingestion --> db : normaliza
+risk --> db : le sinais e grava score
+risk --> api : retorna score e alerta
+alerts --> web : notificacao in-app
+dashboard --> web
+
+@enduml
+```
 
 ## 4. Funcionalidades do Protótipo
 
